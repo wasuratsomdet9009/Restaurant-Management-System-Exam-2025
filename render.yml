@@ -1,23 +1,26 @@
+# Render Blueprint for the RMS backend (native Node runtime).
+# Matches the exam's Render steps: Root Directory = backend, build and start commands from the exam.
+# Set this branch (submission/68030263-20261015) as the deploy branch in the Render dashboard.
+# Secrets (DATABASE_URL, JWT_SECRET, CORS_ORIGIN) are entered in the dashboard only; never commit them.
 services:
-  - type: pserv
+  - type: web
     name: rms-backend
-    env: docker
-    buildCommand: docker build -t rms-backend ./backend
-    dockerfilePath: ./backend/Dockerfile
+    runtime: node
+    plan: free
+    rootDir: backend
+    # --include=dev: with NODE_ENV=production npm omits devDependencies by default,
+    # but tsc (build), prisma (db push) and tsx (seed) are devDependencies.
+    buildCommand: npm install --include=dev && npx prisma generate && npm run build
+    startCommand: npx prisma db push && npx tsx prisma/seed.ts && npm start
+    healthCheckPath: /api/health
     envVars:
+      - key: NODE_VERSION
+        value: "22"
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
       - key: DATABASE_URL
-        sync: false # Set in Render dashboard or via secrets
+        sync: false # Neon PostgreSQL 16 connection string with sslmode=require
       - key: JWT_SECRET
-        sync: false # Set in Render dashboard
+        sync: false # random string, at least 32 characters
       - key: CORS_ORIGIN
-        sync: false # Set to your frontend URL
-    healthCheckPath: /api/health
-    disk:
-      name: prisma-cache
-      mountPath: /app/prisma
-      sizeGB: 1
-
+        sync: false # Vercel frontend origin only, e.g. https://<project>.vercel.app
