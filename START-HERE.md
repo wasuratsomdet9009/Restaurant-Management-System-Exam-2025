@@ -4,7 +4,7 @@
 
 อ่าน Exam-Result.md เป็นไฟล์หลัก มีแผนทดสอบ 25 กรณี รายงานข้อบกพร่องจากโค้ด 4 รายการ และวิธีติดตั้ง
 
-**สถานะล่าสุด:** build/Docker/health ผ่าน auditไม่พบช่องโหว่ Newmanผ่าน20/25 (80%) Unit/APIเดิมผ่าน19/20 ยังขาดภาพหลักฐาน Self-Hosted Runner และผลProductionปัจจุบัน
+**สถานะล่าสุด (15 ต.ค. 2569):** build/Docker/health ผ่าน auditไม่พบช่องโหว่ Newmanผ่าน20/25 (80%) Unit/APIเดิมผ่าน19/20 On-Premises เข้าสู่ระบบได้ที่ 5173 (Backend รันที่ 3101) Self-Hosted Runner online และ job onprem ผ่าน ยังไม่ได้ deploy Neon/Render/Vercel และยังไม่มี Production smoke test
 
 1. ใช้ scripts/prepare-submission.sh โคลนไปโฟลเดอร์ใหม่เพื่อรักษาประวัติ Git ของอาจารย์
 2. ติดตั้ง dependencies และตั้งฐานข้อมูลทดสอบ

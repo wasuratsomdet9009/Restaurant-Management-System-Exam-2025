@@ -5,7 +5,7 @@
 **รายวิชา:** การออกแบบและพัฒนาซอฟต์แวร์ 1  
 **วันที่จัดทำ:** 14 ตุลาคม 2569
 
-> สถานะล่าสุด: build และ Docker Staging ผ่าน audit Backend/Frontend ไม่พบช่องโหว่ (0/0) Newman ผ่าน20/25 หรือ80% ยืนยันบั๊ก4รายการ Unit/APIเดิมผ่าน19/20 ภาพหลักฐาน On-Premises/Production และ Self-Hosted Runner ยังไม่ครบ
+> สถานะล่าสุด (15 ตุลาคม 2569): build และ Docker Staging ผ่าน audit Backend/Frontend ไม่พบช่องโหว่ (0/0) Newman ผ่าน20/25 หรือ80% ยืนยันบั๊ก4รายการ Unit/APIเดิมผ่าน19/20 On-Premises (PostgreSQL 16.15, API และ Frontend 5173 เข้าสู่ระบบได้) Self-Hosted Runner online และ CI job onprem รันบนเครื่องนี้ ยังไม่ได้ deploy Neon/Render/Vercel และยังไม่มี Production smoke test
 
 ## Project Overview
 
@@ -26,7 +26,7 @@
 | Unit/API | Vitest และ Supertest | ผ่าน19/20; helperเดิมไม่ใช่production route |
 | Integration | Postman และ Newman | รันครบ25กรณี ผ่าน20 ไม่ผ่าน5 |
 | Staging | Docker Compose | db/backend/frontend Healthy และhealthผ่าน |
-| Cloud | Neon, Render, Vercel | ยังไม่ได้สร้างบริการและ URL |
+| Cloud | Neon, Render, Vercel | render.yml แก้เป็น Native Node แล้ว (ยังไม่ deploy รอบัญชีผู้ใช้) |
 
 เวอร์ชัน dependency ที่แน่นอนต้องยึด package-lock.json ของแต่ละส่วน ไม่ใช้เวอร์ชันในแผนแทนเวอร์ชันที่ติดตั้งจริง
 
@@ -34,9 +34,9 @@
 
 | รายการ | URL / สถานะปัจจุบัน |
 |---|---|
-| GitHub Public ของผม | https://github.com/wasuratsomdet9009/Restaurant-Management-System-Exam-2025 — รีโพสิทอรี่เดิม; งานรอบนี้ยังไม่push |
-| Frontend เดิม | https://restaurant-management-system-exam-2-kappa.vercel.app — ยังไม่ตรวจเวอร์ชันปัจจุบัน |
-| Backend Health เดิม | https://restaurant-management-system-exam.onrender.com/api/health — แสดงApplication loadingในการตรวจล่าสุด |
+| GitHub Public ของผม | https://github.com/wasuratsomdet9009/Restaurant-Management-System-Exam-2025 — รีโพสิทอรี่เดิม; งานรอบนี้อยู่ในสาขา submission/68030263-20261015 (push แล้ว ล่าสุด 3ab5163) |
+| Frontend เดิม | https://restaurant-management-system-exam-2-kappa.vercel.app — ตรวจก่อนรอบนี้: /login โดยตรงได้ 404 ไม่ใช่หลักฐานของสาขานี้ |
+| Backend Health เดิม | https://restaurant-management-system-exam.onrender.com/api/health — ตรวจก่อนรอบนี้: แสดง Application loading ไม่ใช่ JSON ไม่ใช่หลักฐานของสาขานี้ |
 
 ผมยังไม่นับURLเก่าเป็นหลักฐานการdeployซอร์สรอบนี้ และไม่ใส่connection stringของฐานข้อมูลในรายงาน
 
@@ -186,7 +186,7 @@ Pass Rate ระดับกรณี = จำนวนกรณี Pass / จ�
 
 ## Bug Reports
 
-> Newman รอบ 20261014T181929Z-72752 ยืนยัน HTTP/ฐานข้อมูลของบั๊กทั้ง 4 รายการแล้ว: BUG-001 จาก TC-021/022, BUG-002 จาก TC-015, BUG-003/004 จาก TC-010/011 รายละเอียดจากการอ่านโค้ดด้านล่างเก็บไว้เป็นที่มา ภาพหน้าจอยังต้องเพิ่ม
+> Newman รอบ 20261014T181929Z-72752 ยืนยัน HTTP/ฐานข้อมูลของบั๊กทั้ง 4 รายการแล้ว: BUG-001 จาก TC-021/022, BUG-002 จาก TC-015, BUG-003/004 จาก TC-010/011 รายละเอียดจากการอ่านโค้ดด้านล่างเก็บไว้เป็นที่มา ภาพหน้าจอจาก Staging (localhost) รอบ 15 ตุลาคม 2569 อยู่ใน tests/reports/20261015-ui-evidence/ BUG-004 ยังไม่มีภาพหน้าจอ
 
 ### BUG-001 รับเงินไม่ครบแต่บันทึกชำระสำเร็จ
 
@@ -204,7 +204,7 @@ Pass Rate ระดับกรณี = จำนวนกรณี Pass / จ�
 
 **Actual Result:** TC-021 ตอบHTTP201 บันทึกเงินรับ100จากยอด160 เงินทอน-60; TC-022 แสดงสถานะpaidและมีpayment แทนconfirmed/ไม่มีpayment
 
-**Evidence:** [payments.ts](backend/src/routes/payments.ts), TC-021 และ TC-022; ดูmeasured-results.json; รอภาพหน้าจอ
+**Evidence:** [payments.ts](backend/src/routes/payments.ts), TC-021 และ TC-022; ดูmeasured-results.json; ภาพหน้าจอ Staging: [ฟอร์มรับเงิน 100 แสดงเงินทอน -60](tests/reports/20261015-ui-evidence/bug-001-cashier-underpayment-form-staging.jpg) และ [หลังกดชำระ แสดง Payment Successful และป้าย BUG-001 DETECTED ที่แอปแสดงเอง](tests/reports/20261015-ui-evidence/bug-001-cashier-underpayment-result-staging.jpg) (ออเดอร์ #13 โต๊ะ 1 ยอด 160)
 
 **Business Impact:** ร้านอาจรับเงินไม่ครบแต่ระบบบันทึกรายได้เต็มยอด ทำให้ปิดยอดเงินสดไม่ตรง
 
@@ -226,7 +226,7 @@ Pass Rate ระดับกรณี = จำนวนกรณี Pass / จ�
 
 **Actual Result:** TC-015 ตอบHTTP201 และสร้างออเดอร์ที่สองบนโต๊ะเดิม แทนHTTP409
 
-**Evidence:** [orders.ts](backend/src/routes/orders.ts), TC-015; ดูmeasured-results.json; รอภาพหน้าจอ
+**Evidence:** [orders.ts](backend/src/routes/orders.ts), TC-015; ดูmeasured-results.json; ภาพหน้าจอ Staging: [Orders แสดงออเดอร์ #14 และ #15 ของโต๊ะ 1 เปิดพร้อมกัน](tests/reports/20261015-ui-evidence/bug-002-two-open-orders-table1-staging.jpg); log API: [bug-002-duplicate-open-order-api.log](tests/reports/20261015-ui-evidence/bug-002-duplicate-open-order-api.log) (ครั้งที่สองได้ HTTP 201 ไม่ใช่ 409)
 
 **Business Impact:** พนักงานอาจส่งอาหารหรือเรียกเก็บเงินซ้ำ และการปิดบิลหนึ่งอาจแสดงโต๊ะว่างทั้งที่อีกบิลยังค้าง
 
@@ -248,7 +248,7 @@ Pass Rate ระดับกรณี = จำนวนกรณี Pass / จ�
 
 **Actual Result จากโค้ด:** route PUT ใช้ authenticate แต่ไม่มี requireRole('admin') ก่อน prisma.menuItem.update จึงไม่มีการตรวจบทบาทตรงเส้นทางนี้
 
-**Evidence:** [menu.ts](backend/src/routes/menu.ts), TC-010; ดูmeasured-results.json; รอภาพหน้าจอ
+**Evidence:** [menu.ts](backend/src/routes/menu.ts), TC-010; ดูmeasured-results.json; ภาพหน้าจอ Staging: [waiter1 เข้าหน้าแก้ไขราคาได้ และแอปตอบ Menu item updated](tests/reports/20261015-ui-evidence/bug-003-waiter-edits-price-staging.jpg) (Spring Rolls เปลี่ยนเป็น ฿1.00 บน Staging แล้ว admin ตั้งกลับเป็น ฿65)
 
 **Business Impact:** พนักงานที่ไม่มีสิทธิ์อาจเปลี่ยนราคา ทำให้ยอดขายและเงินรับผิดพลาด
 
@@ -270,7 +270,7 @@ Pass Rate ระดับกรณี = จำนวนกรณี Pass / จ�
 
 **Actual Result:** TC-011 ตอบHTTP200พร้อมรายการเมนู แทนarrayว่างเมื่อค้นหาข้อความpayloadเป็นliteral
 
-**Evidence:** [menu.ts](backend/src/routes/menu.ts), TC-011; ดูmeasured-results.json; รอภาพหน้าจอ
+**Evidence:** [menu.ts](backend/src/routes/menu.ts), TC-011; ดูmeasured-results.json; ยังไม่มีภาพหน้าจอ (ยืนยันด้วย Newman อย่างเดียว)
 
 **Business Impact:** ผู้ใช้ที่ล็อกอินอาจอ่านรายการที่ระบบไม่ควรแสดง กระทบความน่าเชื่อถือของข้อมูล
 
@@ -337,15 +337,17 @@ curl -f http://localhost:3001/api/health
 
 ### On-Premises Setup
 
-ยังไม่สำเร็จในรอบนี้ ติดตั้งแพ็กเกจไม่ได้และยังไม่มีภาพ login/health
+สำเร็จบนเครื่อง Mac (arm64): PostgreSQL 16.15 รันใน Docker ที่ 127.0.0.1:5432 (ฐานข้อมูล `rms_onprem` แยกจาก Staging) Backend ผ่าน `npm ci`, prisma generate, build, db push และ seed; Frontend ผ่าน `npm ci` และรัน Vite ที่พอร์ต 5173 เข้าสู่ระบบ admin ได้
 
 การติดตั้ง Self-Hosted Runner ตามโจทย์: เข้า repository ของผม → Settings → Actions → Runners → New self-hosted runner เลือก OS/architecture ของเครื่อง ทำตามคำสั่งที่ GitHub สร้างให้และใช้ registration token เฉพาะรอบนั้น ติดตั้ง runner เป็น service ตามหน้าจอ และตรวจสถานะ Online ก่อนรันงาน ห้ามบันทึก registration token ในรายงาน
 
-CI ปัจจุบันใช้ GitHub-hosted runner สำหรับการทดสอบ ไม่ใช่หลักฐานว่าติดตั้ง self-hosted runner แล้ว ส่วน on-premises ต้องติดตั้งและเก็บหลักฐานเพิ่มเติม
+CI job `test` ใช้ GitHub-hosted runner (ubuntu) ส่วน job `onprem` รันบน self-hosted runner `rms-68030263-mac` (labels: self-hosted, macOS, ARM64) ที่ติดตั้งบนเครื่องนี้ ดูสถานะ runner ใน [runner-status.txt](tests/reports/20261015-onprem-run/runner-status.txt)
 
 **หมายเหตุพอร์ต:** โจทย์ระบุ backend 3001 แต่ตัวอย่างภาพหลักฐานเขียน 3000 ผมยึด 3001 ตามซอร์สและส่วนติดตั้ง หากต้องการภาพที่ 3000 ให้ตั้ง PORT=3000 และแก้ VITE_API_URL ให้ตรงกัน ไม่อ้างว่าทั้งสองพอร์ตทำงานโดยไม่ได้รัน
 
-หลักฐานที่ยังต้องเพิ่ม: ภาพ health พร้อม address bar และภาพหน้า frontend หลัง login สำเร็จ
+**พอร์ตที่รันจริงรอบนี้:** Backend รันที่ **3101** (`PORT=3101`) และ Frontend ที่ `http://localhost:5173` ใช้ `VITE_API_URL=http://localhost:3101/api` เพราะพอร์ต 3001 ถูก Docker Staging ใช้อยู่ ต้องหยุด Staging ก่อนจึงรัน Backend ที่ 3001 ตามขั้นตอนโจทย์ได้ (รอการอนุมัติ)
+
+หลักฐานที่มี: [health Backend 3101 (ภาพ)](tests/reports/20261015-onprem-run/onprem-api-health-3101.jpg), [health Backend 3101 (log curl)](tests/reports/20261015-onprem-run/onprem-health-3101.log), [หน้า login Frontend 5173](tests/reports/20261015-onprem-run/onprem-frontend-login-5173.jpg), [dashboard หลัง login admin 5173](tests/reports/20261015-onprem-run/onprem-frontend-admin-dashboard-5173.jpg), [log Backend](tests/reports/20261015-onprem-run/backend-api.log) ยังขาดภาพ health ที่เห็นแถบ address bar และการรันที่พอร์ต 3001 ตามโจทย์
 
 ### Staging Environment
 
@@ -353,7 +355,9 @@ docker-compose.yml เพิ่ม PostgreSQL 16, environment ครบ, backend
 
 ปรับ backend Dockerfile ให้ generate Prisma ก่อน build และ compile seed ระหว่าง build เพื่อลดการดาวน์โหลดเครื่องมือเพิ่มตอน start
 
-ผลจริง: compose config ผ่าน แต่ยังไม่มี docker compose up สำเร็จและภาพ docker compose ps ดังนั้น staging smoke test ยังเป็น Not Run
+ผลจริง: `docker compose ps` แสดง db, backend, frontend เป็น healthy ([docker-compose-ps.log](tests/reports/20261015-ui-evidence/docker-compose-ps.log)) health ตอบ `{"status":"ok"}` ([log](tests/reports/20261015-ui-evidence/staging-health-3001.log)) และทดสอบ UI บน `http://localhost` ครบ 4 ขั้นตอน (ดู Smoke Test Results)
+
+หมายเหตุ: stack ที่รันอยู่ build จากโฟลเดอร์สำเนา `RMS-68030263` ซึ่ง docker-compose.yml, Dockerfile, backend/src, frontend/src, prisma และ lockfile เหมือนกับโฟลเดอร์นี้ (ตรวจด้วย diff แล้ว) ยังไม่ได้ rebuild ในโฟลเดอร์นี้ เพราะต้องหยุด stack เดิมที่ใช้พอร์ต 80/3001 ซึ่งยังไม่ได้รับอนุมัติ และยังไม่มีภาพหน้าจอ `docker compose ps` (มีเฉพาะ log)
 
 ### Neon.tech Database Setup
 
@@ -370,6 +374,7 @@ docker-compose.yml เพิ่ม PostgreSQL 16, environment ครบ, backend
 - Start ตามข้อสอบ: npx prisma db push && npx tsx prisma/seed.ts && npm start
 - ตั้ง DATABASE_URL, JWT_SECRET, CORS_ORIGIN และ NODE_ENV=production
 - เก็บ dependencies สำหรับ prisma/tsx ตาม start command ไม่ตั้ง NPM_CONFIG_PRODUCTION=true ซึ่งจะตัด devDependencies ที่จำเป็น
+- Build ใช้ `npm install --include=dev` เพราะ NODE_ENV=production ทำให้ npm ข้าม devDependencies (ตรวจแล้ว `npm config get omit` = dev) ไฟล์ [render.yml](render.yml) ตั้งค่าตามนี้ (native Node, rootDir backend)
 - ตรวจ /api/health และบันทึก URL จริง
 
 **Vercel frontend**
@@ -401,20 +406,26 @@ docker-compose.yml เพิ่ม PostgreSQL 16, environment ครบ, backend
 
 ### Smoke Test Results
 
-| Feature | Local | Staging | Production | หลักฐานที่ต้องเพิ่ม |
+| Feature | On-Premises (Local) | Staging (Docker) | Production (Cloud) | หลักฐาน |
 |---|---|---|---|---|
-| Health status ok | Not Run | Not Run | Not Run | URL และ JSON |
-| Login admin | Not Run | Not Run | Not Run | หน้าเว็บหลัง login |
-| เปิดโต๊ะ เพิ่มสินค้า Confirm | Not Run | Not Run | Not Run | ออเดอร์และยอดรวม |
-| Payment และเงินทอน | Not Run | Not Run | Not Run | ยอดบิล เงินรับ เงินทอน |
+| Health status ok | ผ่าน: 127.0.0.1:3101 ตอบ 200 status=ok | ผ่าน: 127.0.0.1:3001 ตอบ 200 status=ok | Not Run: ยังไม่ deploy | [ภาพ 3101](tests/reports/20261015-onprem-run/onprem-api-health-3101.jpg), [log 3101](tests/reports/20261015-onprem-run/onprem-health-3101.log), [log Staging](tests/reports/20261015-ui-evidence/staging-health-3001.log) |
+| Login admin | ผ่าน: admin เข้า dashboard ที่ localhost:5173 | ผ่าน: admin, cashier1, waiter1 เข้าระบบบน localhost | Not Run | [login Staging](tests/reports/20261015-ui-evidence/staging-login-localhost.jpg), [dashboard 5173](tests/reports/20261015-onprem-run/onprem-frontend-admin-dashboard-5173.jpg) |
+| เปิดโต๊ะ เพิ่มสินค้า Confirm | Not Run (รอบนี้ยังไม่ได้ทำบน on-prem) | ผ่าน: Order #13 โต๊ะ 1 Pad Thai 2 ชิ้น รวม ฿160 สถานะ confirmed | Not Run | [ภาพ Order #13](tests/reports/20261015-ui-evidence/staging-order-13-confirmed-160.jpg) |
+| Payment และเงินทอน | Not Run | ยืนยัน BUG-001: รับ 100 จากยอด 160 แสดง Payment Successful เงินทอน -60 | Not Run | [ภาพฟอร์ม](tests/reports/20261015-ui-evidence/bug-001-cashier-underpayment-form-staging.jpg), [ภาพผล](tests/reports/20261015-ui-evidence/bug-001-cashier-underpayment-result-staging.jpg) |
 
 ## CI/CD Pipeline + Newman Pass Rate
 
-Workflow อยู่ที่ [.github/workflows/cicd.yml](.github/workflows/cicd.yml) ทำงานเมื่อ push main, pull request หรือสั่งเอง ติดตั้ง Node.js 22, PostgreSQL 16, build ทั้งสองส่วน, รัน unit/API, audit และ Newman พร้อมเก็บรายงาน
+Workflow อยู่ที่ [.github/workflows/cicd.yml](.github/workflows/cicd.yml) ทำงานเมื่อ push ไป main หรือ submission/68030263-20261015, pull request เข้า main หรือสั่งเอง (job onprem ทำงานเฉพาะ push) ติดตั้ง Node.js 22, PostgreSQL 16, build ทั้งสองส่วน, รัน unit/API, audit และ Newman พร้อมเก็บรายงาน
 
 ใช้ continue-on-error เฉพาะเพื่อให้เก็บผลหลายส่วนได้ครบ แต่มี final gate ตรวจ outcome ทุกส่วน หากมีข้อใดไม่สำเร็จ job จะ fail และ deploy ไม่ทำงาน ไม่ได้กลบผลทดสอบที่ล้มเหลว
 
-ยังไม่มี GitHub Actions run URL ของงานรอบนี้ ส่วน NewmanบนStagingผ่าน20/25 (80%) และassertions40/46 (86.96%) เป็นคนละตัวชี้วัด ผลทดสอบบั๊กต้นฉบับยังFail จึงทำให้test gateไม่ผ่านตามจริง
+**Run ล่าสุดบนสาขางาน:** https://github.com/wasuratsomdet9009/Restaurant-Management-System-Exam-2025/actions/runs/38628698763 (commit 224bc40)
+- job `onprem` **success** บน self-hosted runner `rms-68030263-mac` (macOS ARM64): PostgreSQL 16 ชั่วคราว, build, db push, seed, API พอร์ต 3201, health และ admin login ผ่าน
+- job `test` (GitHub-hosted, ubuntu) **failure** ตาม gate: Unit มี 1 กรณีล้มเหลว (BUG-001 ใน payment.test.ts) และ Newman assertions 6 จาก 46 ล้มเหลว (5 กรณี) ซึ่งเป็นบั๊กต้นฉบับที่ตั้งใจไม่แก้ expected; build, audit และ health ผ่าน
+- job `deploy` skipped (ทำงานเฉพาะ push ไป main)
+- รายละเอียดขั้นตอน: [ci-run-38628698763.txt](tests/reports/20261015-onprem-run/ci-run-38628698763.txt) ส่วน run [38620659566](https://github.com/wasuratsomdet9009/Restaurant-Management-System-Exam-2025/actions/runs/38620659566) ก่อนหน้า job onprem ถูก cancel เพราะ post-step ของ setup-node ค้างจากการ cache npm บน self-hosted (แก้แล้วใน 224bc40)
+
+ส่วน NewmanบนStagingผ่าน20/25 (80%) และassertions40/46 (86.96%) เป็นคนละตัวชี้วัด ผลทดสอบบั๊กต้นฉบับยังFail จึงทำให้test gateไม่ผ่านตามจริง
 
 ## รายการที่ต้องทำก่อนส่ง MS Teams
 
@@ -422,12 +433,14 @@ Workflow อยู่ที่ [.github/workflows/cicd.yml](.github/workflows/ci
 - [x] Newmanครบ25กรณี พร้อมผลจริงและBug Reports4รายการ
 - [x] npm auditก่อน/หลังแก้; ล่าสุด0ทั้งBackend/Frontend
 - [x] Docker Stagingและhealthผ่าน
-- [ ] commit/pushงานรอบนี้จากTerminal ด้วยscripts/publish-submission.sh
-- [ ] ภาพหน้าจอบั๊กอย่างน้อย2รายการ และภาพDocker compose ps
-- [ ] On-Premisesที่พอร์ต5173 พร้อมlogin และSelf-Hosted Runner
-- [ ] เปลี่ยนรหัสฐานข้อมูลที่เคยเปิดเผยในรายงานสาธารณะเดิม และอัปเดตRender
-- [ ] ยืนยันdeployซอร์สล่าสุดบนNeon/Render/Vercel และProduction Smoke4รายการ
-- [ ] ส่ง3URLผ่านMS Teams
+- [x] commit/push สาขา submission แล้ว (ล่าสุด 224bc40) ไม่ได้ใช้ publish-submission.sh
+- [x] ภาพหน้าจอบั๊ก 3 รายการจาก Staging (BUG-001, BUG-002, BUG-003)
+- [ ] ภาพ docker compose ps (ตอนนี้มีเฉพาะ log ข้อความ)
+- [ ] On-Premises ที่ Backend พอร์ต 3001 (รอบนี้รันจริงที่ 3101; Frontend 5173 เข้าสู่ระบบได้)
+- [x] Self-Hosted Runner online บนเครื่อง Mac (ดู runner-status.txt)
+- [ ] เปลี่ยนรหัสฐานข้อมูลที่เคยเปิดเผยในรายงานสาธารณะเดิม และอัปเดตRender (ผู้ใช้ดำเนินการเอง)
+- [ ] ยืนยันdeployซอร์สล่าสุดบนNeon/Render/Vercel และProduction Smoke4รายการ (รอบัญชีผู้ใช้)
+- [ ] ส่ง3URLผ่านMS Teams (ผู้ใช้ส่งเอง)
 
 ผมยังไม่ส่งงานจนหลักฐานที่เหลือครบ ข้อสอบกำหนดให้รายงานบั๊ก จึงเก็บผลFailตามจริง ไม่ปรับexpectedเพื่อให้CIผ่าน
 

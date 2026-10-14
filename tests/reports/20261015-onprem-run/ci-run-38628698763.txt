@@ -1,0 +1,40 @@
+# CI run 38628698763 (commit 224bc40) — 2026-10-14T20:04:14Z
+# URL: https://github.com/wasuratsomdet9009/Restaurant-Management-System-Exam-2025/actions/runs/38628698763
+run: completed failure
+job test: completed failure
+   1 Set up job | success
+   2 Initialize containers | success
+   3 Run actions/checkout@v4 | success
+   4 Run actions/setup-node@v4 | success
+   5 Install and build backend | success
+   6 Create disposable test schema | success
+   7 Unit and API tests | success
+   8 Audit backend | success
+   9 Install and build frontend | success
+   10 Audit frontend | success
+   11 Start API and wait for readiness | success
+   12 Install Newman | success
+   13 Newman integration suite | success
+   14 Upload measured evidence | success
+   15 Enforce all test and audit gates | failure
+   28 Post Run actions/setup-node@v4 | skipped
+   29 Post Run actions/checkout@v4 | success
+   30 Stop containers | success
+   31 Complete job | success
+job onprem: completed success
+   1 Set up job | success
+   2 Run actions/checkout@v4 | success
+   3 Start disposable PostgreSQL 16 container | success
+   4 Run actions/setup-node@v4 | success
+   5 Install, generate, build, push schema and seed backend | success
+   6 Start API on the runner and wait for readiness | success
+   7 On-premises smoke check (admin login) | success
+   8 Stop API and remove database container | success
+   9 Upload on-premises evidence | success
+   17 Post Run actions/setup-node@v4 | success
+   18 Post Run actions/checkout@v4 | success
+   19 Complete job | success
+job deploy: completed skipped
+# artifacts
+rms-68030263-onprem-selfhosted 376 bytes
+rms-68030263-reports 94886 bytes

@@ -1,0 +1,15 @@
+# Self-hosted runner evidence — 2026-10-14T19:01:51Z
+## gh api runners (metadata only)
+{"busy":false,"labels":["self-hosted","macOS","ARM64","rms-onprem"],"name":"rms-68030263-mac","os":"macOS","status":"online"}
+## launchd service status
+status actions.runner.wasuratsomdet9009-Restaurant-Management-System-Exam-2025.rms-68030263-mac:
+
+/Users/wasuratsomdet/Library/LaunchAgents/actions.runner.wasuratsomdet9009-Restaurant-Management-System-Exam-2025.rms-68030263-mac.plist
+
+Started:
+83936 0 actions.runner.wasuratsomdet9009-Restaurant-Management-System-Exam-2025.rms-68030263-mac
+
+## runner diag (last lines)
+[2026-10-14 18:58:30Z INFO Terminal] WRITE LINE: Current runner version: '2.338.0'
+[2026-10-14 18:58:30Z INFO Terminal] WRITE LINE: 2026-10-14 18:58:30Z: Listening for Jobs
+[2026-10-14 18:58:30Z INFO JobDispatcher] Set runner/worker IPC timeout to 30 seconds.

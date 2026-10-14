@@ -1,238 +1,111 @@
-# Restaurant Management System (RMS) v2
+# Restaurant Management System (RMS) — 68030263
 
-> **ข้อสอบปฏิบัติ** — รายวิชาการออกแบบและพัฒนาซอฟต์แวร์ 1 | KMITL
+**ผู้จัดทำ:** นายวสุรัชต์ สมเด็จ  
+**รหัสนักศึกษา:** 68030263  
+**รายวิชา:** การออกแบบและพัฒนาซอฟต์แวร์ 1  
+**อัปเดตล่าสุด:** 15 ตุลาคม 2569
 
-[![CI](https://github.com/YOUR_USERNAME/restaurant-management-system/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/restaurant-management-system/actions)
+รายงานฉบับเต็ม (ผลทดสอบ บั๊ก และหลักฐานทุกส่วน) อยู่ที่ [Exam-Result.md](Exam-Result.md) ไฟล์นี้สรุปสถานะและวิธีรันเท่านั้น
 
----
+## ลิงก์งาน
 
-## 🏠 Project Overview
+| รายการ | ลิงก์ / สถานะ |
+|---|---|
+| GitHub Repository (Public) | https://github.com/wasuratsomdet9009/Restaurant-Management-System-Exam-2025 |
+| Branch ของงาน | `submission/68030263-20261015` (commit ล่าสุดตามประวัติ Git) — default branch ยังเป็น `main` เดิม |
+| Production Frontend | ยังไม่ได้ deploy รอผู้ใช้ตั้งค่า Vercel |
+| Production Backend `/api/health` | ยังไม่ได้ deploy รอผู้ใช้ตั้งค่า Render และ Neon |
+| CI run (GitHub Actions) | ดูหัวข้อ CI/CD ด้านล่าง |
 
-ระบบจัดการร้านอาหาร (RMS) สำหรับจัดการเมนู รับออเดอร์ ชำระเงิน และดูรายงานยอดขาย
+## สถานะที่ยืนยันแล้ว
 
-**นักศึกษา:** _กรอกชื่อ-สกุล_
-**รหัสนักศึกษา:** _กรอกรหัส_
-**วันที่สอบ:** _วันที่_
+- Build Backend/Frontend ผ่าน และ `npm audit` ทั้ง Backend และ Frontend ไม่พบช่องโหว่ (0)
+- Docker Compose (Staging): `db`, `backend`, `frontend` สถานะ healthy, `GET /api/health` ตอบ `{"status":"ok"}`
+- Newman: ผ่าน 20/25 กรณี (80%), assertions 40/46 (86.96%) — 5 กรณีล้มเหลวเพราะบั๊กต้นฉบับ ตั้งใจเก็บไว้ ไม่ได้แก้ expected
+- Unit/API เดิม (Vitest): 1 ไฟล์ผ่าน 1 ไฟล์ล้มเหลว (BUG-001 ใน `payment.test.ts`) — helper ในไฟล์ทดสอบเป็นสำเนาการคำนวณ ไม่ใช่ route จริง
+- On-Premises: PostgreSQL 16.15 บนเครื่อง, Backend รันจริง, Frontend ที่ `http://localhost:5173` เข้าสู่ระบบ admin ได้ (ดูหัวข้อ On-Premises)
+- GitHub Actions Self-Hosted Runner `rms-68030263-mac` (macOS ARM64) สถานะ online และรัน job `onprem` (ดูหัวข้อ CI/CD)
 
----
+## ยังไม่เสร็จ
 
-## 🛠️ Tech Stack
+- Neon: ยังไม่ได้เปลี่ยนรหัส role ที่เคยเปิดเผยในรายงานบน `main` เดิม (ผู้ใช้ต้องดำเนินการเอง)
+- Render และ Vercel: ยังไม่ได้ deploy จากสาขานี้ จึงยังไม่มี Production smoke test
+- Staging ตรวจแล้วบนสำเนาโฟลเดอร์ที่ source เหมือนกัน (ดูหมายเหตุใน Exam-Result.md)
 
-| Layer    | Technology |
-|----------|------------|
-| Frontend | React 18 + Vite + **TypeScript** + **Tailwind CSS** |
-| Backend  | Node.js 22 LTS + Express + **TypeScript** |
-| Database | PostgreSQL 16 (Neon.tech) |
-| ORM      | **Prisma** |
-| Testing  | **Vitest** + Supertest + Newman |
-| Deploy   | Vercel (FE) + Render (BE + DB) |
+## Tech Stack (เวอร์ชันจาก package-lock.json)
 
----
+| ส่วน | เทคโนโลยี | เวอร์ชัน |
+|---|---|---|
+| Frontend | React, Vite, Tailwind CSS, React Router | 18.3.1, 8.3.4, 4.3.3, 7.18.4 |
+| Backend | Node.js (ที่ใช้ทดสอบ), Express, TypeScript | 22.17.1, 4.22.3, 5.9.3 |
+| Database | PostgreSQL (Docker และ on-prem), Neon (ยังไม่ได้ตั้ง) | 16.15 |
+| ORM | Prisma | 5.22.0 |
+| Testing | Vitest, Newman | 4.1.11, Newman ตาม CI |
 
-## 🌐 Production URLs
+## รันระบบบนเครื่อง (On-Premises)
 
-| Service     | URL |
-|-------------|-----|
-| Frontend    | https://YOUR-FRONTEND.vercel.app |
-| Backend API | https://YOUR-BACKEND.onrender.com |
-| Health Check| https://YOUR-BACKEND.onrender.com/api/health |
+ตั้งค่า `backend/.env` จาก `backend/.env.example` (ห้าม commit) แล้วรัน
 
----
-
-## 📋 Test Plan
-
-<!-- ส่วนที่ 1: นักศึกษากรอก -->
-
-### Test Scope
-**In Scope:**
-- [ ] Authentication (Login/Logout, JWT)
-- [ ] Menu Management (CRUD + Role-based access)
-- [ ] Order Management (Open/Add Items/Confirm/Cancel)
-- [ ] Payment Processing (Cash/Card/QR)
-- [ ] Sales Reports
-
-**Out of Scope:** _ระบุสิ่งที่ไม่ทดสอบ_
-
-### Test Approach
-
-| ประเภท | เครื่องมือ | ครอบคลุม |
-|--------|-----------|----------|
-| Unit Testing | Vitest | Business Logic (Payment Calculation) |
-| API Testing | Postman / Newman | REST Endpoints ทั้งหมด |
-| Security Testing | Manual + Postman | Auth, SQL Injection, Role Check |
-
-### Test Environment
-
-| Component | Specification |
-|-----------|--------------|
-| Node.js   | 22 LTS |
-| PostgreSQL | 16 (Neon.tech) |
-| Browser   | _กรอก_ |
-| OS        | _กรอก_ |
-
-### Entry/Exit Criteria
-
-**Entry:** ระบบ Start ได้, `GET /api/health` คืน `{"status":"ok"}`
-**Exit:** ≥ 80% Test Cases ผ่าน, ไม่มี Critical Bug ที่ยังไม่รายงาน
-
-### Business Risk
-
-| ความเสี่ยง | ผลกระทบ | Priority |
-|-----------|---------|---------|
-| _กรอก_ | _กรอก_ | P1 |
-| _กรอก_ | _กรอก_ | P2 |
-
----
-
-## 🧪 Test Cases & Results
-
-<!-- ส่วนที่ 2 -->
-
-### Vitest Results
-```
-Run: npm test
-✓ Payment returns positive change when overpaid
-✗ [BUG-001] Should NOT allow negative change  ← reveals bug!
-...
-```
-
-### Newman Pass Rate
-```
-Total: 21  |  Passed: __  |  Failed: __  |  Pass Rate: __%
-```
-
-### Test Case Table
-
-| TC-ID | Feature | Scenario | Expected | Actual | Pass/Fail |
-|-------|---------|----------|----------|--------|-----------|
-| TC-002 | Auth | Admin login | 200 + JWT | | |
-| TC-005 | Auth | Wrong password | 401 | | |
-| TC-007 | Security | No token | 401 | | |
-| TC-010 | Security | SQL Injection | Empty/400 | | |
-| TC-011 | Security | Waiter update price | 403 | | |
-| TC-015 | Order | Double booking | 409 | | |
-| TC-020 | Payment | Underpayment | 400 | | |
-
----
-
-## 🐛 Bug Reports
-
-<!-- ส่วนที่ 3 -->
-
-## BUG-001: [ชื่อ Bug]
-
-**Severity:** Critical
-**Feature:** Payment
-**Endpoint:** `POST /api/payments`
-
-### Steps to Reproduce
-1. ...
-
-### Expected / Actual Result
-...
-
-### Business Impact
-...
-
----
-
-## 🚀 Deployment Guide
-
-<!-- ส่วนที่ 5 -->
-
-### Prerequisites
-```
-Node.js >= 22.0.0
-Docker Desktop (for local)
-```
-
-### Local Setup (Docker Compose)
 ```bash
-git clone https://github.com/YOUR_USERNAME/restaurant-management-system.git
-cd restaurant-management-system
-docker compose up --build
-# Frontend: http://localhost
-# Backend:  http://localhost:3001/api/health
+cd backend
+npm ci
+npx prisma generate
+npx prisma db push
+npm run db:seed
+npm run dev
 ```
 
-### Local Setup (Manual)
 ```bash
-# Backend
-cd backend && cp .env.example .env
-# แก้ DATABASE_URL ใน .env
-npm install && npx prisma db push && npx tsx prisma/seed.ts && npm run dev
-
-# Frontend (Terminal ใหม่)
-cd frontend && cp .env.example .env.local
-npm install && npm run dev
-# เปิด http://localhost:5173
+cd frontend
+npm ci
+VITE_API_URL=http://localhost:3001/api npm run dev -- --host 127.0.0.1 --port 5173
 ```
 
-### Environment Variables (Backend)
+บัญชีทดสอบ (ข้อมูลทดสอบเท่านั้น): `admin / Admin@123`, `cashier1 / Cashier@123`, `waiter1 / Waiter@123`
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `DATABASE_URL` | Render PostgreSQL URL | `postgresql://user:pass@...render.com/db` |
-| `JWT_SECRET` | Random secret string | *(ไม่ระบุ)* |
-| `CORS_ORIGIN` | Frontend URL | `https://your-app.vercel.app` |
+## รันด้วย Docker Compose (Staging)
 
-### Render PostgreSQL Database Setup
-1. ไปที่ https://dashboard.render.com → Databases → New PostgreSQL
-2. เลือก Free plan หรือ Paid ตามต้องการ
-3. Copy External Database URL → ใส่เป็น `DATABASE_URL`
-4. รัน `npx prisma db push` เพื่อสร้าง Schema (local หรือใน Render build)
-
-### Vercel Deployment (Frontend)
-1. Import repo → Root Directory: `frontend`
-2. Framework: Vite
-3. Env: `VITE_API_URL=https://your-backend.onrender.com/api`
-
-### Render Deployment (Backend + Database)
-1. สร้าง PostgreSQL database บน Render (ตามขั้นตอนด้านบน)
-2. New Web Service → Connect GitHub repo → เลือก branch
-3. Root Directory: (ว่าง) หรือ `backend` ถ้าใช้ Dockerfile แยก
-4. Environment: Docker
-5. Build Command: (ว่าง - ใช้ Dockerfile)
-6. Start Command: (ว่าง - ใช้ Dockerfile CMD)
-7. Add Environment Variables ใน Environment tab:
-   - `DATABASE_URL`: จาก database ที่สร้าง
-   - `JWT_SECRET`: random string
-   - `CORS_ORIGIN`: frontend URL
-8. Deploy → Monitor logs
-
-หรือใช้ `render.yaml` สำหรับ auto-configuration:
-- Push `render.yaml` ไป GitHub
-- ใน Render Dashboard → Settings → YAML → Enable
-
-### Smoke Test Results
-
-| Test | URL | Result |
-|------|-----|--------|
-| Health | GET /api/health | ✅/❌ |
-| Login | POST /api/auth/login | ✅/❌ |
-| Add Menu | POST /api/menu | ✅/❌ |
-| Open Order | POST /api/orders | ✅/❌ |
-| Payment | POST /api/payments | ✅/❌ |
-
----
-
-## 🔄 CI/CD Pipeline
-
-**Newman Pass Rate (Latest):**
-```
-✓ TC-002: Admin login
-✓ TC-005: Wrong password → 401
-✗ TC-010: SQL Injection (BUG-003 detected)
-...
+```bash
+cp .env.example .env   # ตั้งค่า POSTGRES_PASSWORD และ JWT_SECRET เป็นค่าสุ่มของตนเอง
+docker compose up --build -d
+docker compose ps
+curl -f http://127.0.0.1:3001/api/health
 ```
 
----
+เปิด `http://localhost` (frontend พอร์ต 80, backend พอร์ต 3001) ห้ามใช้ `docker compose down -v` กับฐานข้อมูลที่ต้องเก็บ
 
-## 🔐 Default Credentials (Testing Only)
+## Cloud Deployment
 
-| Role | Username | Password |
-|------|----------|----------|
-| Admin | admin | Admin@123 |
-| Cashier | cashier1 | Cashier@123 |
-| Waiter | waiter1 | Waiter@123 |
+- **Neon:** PostgreSQL 16, ใช้ connection string ที่มี `sslmode=require` และตั้งใน Render เท่านั้น
+- **Render:** ใช้ [render.yml](render.yml) เป็น Blueprint แบบ Native Node (Root Directory `backend`) — Build: `npm install --include=dev && npx prisma generate && npm run build`, Start: `npx prisma db push && npx tsx prisma/seed.ts && npm start`, Health: `/api/health`
+- **Vercel:** Root Directory `frontend`, Framework Vite, Output `dist`, ตั้ง `VITE_API_URL=https://<backend-host>/api` ก่อน build; [frontend/vercel.json](frontend/vercel.json) มี SPA rewrite สำหรับ `/login` และการ refresh
+- **CORS_ORIGIN** ของ Render ต้องเป็น origin ของ Vercel เท่านั้น (ไม่มี `/api`)
 
+## CI/CD
+
+ไฟล์ [.github/workflows/cicd.yml](.github/workflows/cicd.yml)
+
+- trigger: push ไป `main` และ `submission/68030263-20261015`, pull request เข้า `main`, และ `workflow_dispatch`
+- job `test` (ubuntu-latest): Node.js 22, PostgreSQL 16 service, build, Unit/API, `npm audit --audit-level=high` ทั้งสองส่วน, Newman, แล้ว gate ตรวจทุกผลลัพธ์
+- job `onprem` (self-hosted, macOS, ARM64): PostgreSQL 16 แบบ container ชั่วคราว, build, db push, seed, เปิด API และตรวจ health กับ admin login — เฉพาะ push เท่านั้น เพราะเป็น repository สาธารณะ
+- job `deploy`: เฉพาะ push ไป `main` และต้องผ่าน `test`
+
+ผล CI รอบล่าสุดที่รันบนสาขางาน: https://github.com/wasuratsomdet9009/Restaurant-Management-System-Exam-2025/actions/runs/38628698763 (commit 224bc40)
+- `onprem`: **success** บน self-hosted runner `rms-68030263-mac`
+- `test`: **failure** ตาม gate เพราะ Unit มี 1 กรณีล้มเหลวและ Newman มี 5 กรณีล้มเหลว จากบั๊กต้นฉบับ (ตั้งใจ ไม่ได้ซ่อน)
+- `deploy`: skipped (ทำงานเฉพาะ push ไป main)
+
+## บั๊กที่พบ (รายละเอียดและภาพใน Exam-Result.md)
+
+| ID | ความรุนแรง | ฟีเจอร์ | หลักฐาน |
+|---|---|---|---|
+| BUG-001 | Critical | Payment รับเงินไม่ครบแต่บันทึกว่าชำระแล้ว (รับ 100 จาก 160 เงินทอน -60) | UI: [ภาพ](tests/reports/20261015-ui-evidence/bug-001-cashier-underpayment-result-staging.jpg), Newman TC-021/022 |
+| BUG-002 | High | เปิดออเดอร์ซ้ำบนโต๊ะเดียวกัน ได้ 201 แทน 409 | UI: [ภาพ](tests/reports/20261015-ui-evidence/bug-002-two-open-orders-table1-staging.jpg), [log API](tests/reports/20261015-ui-evidence/bug-002-duplicate-open-order-api.log) |
+| BUG-003 | High | พนักงาน (waiter) แก้ราคาเมนูได้ | UI: [ภาพ](tests/reports/20261015-ui-evidence/bug-003-waiter-edits-price-staging.jpg), Newman TC-010 |
+| BUG-004 | High | ค้นหาเมนูด้วย SQL ที่ต่อข้อความ ได้รายการแทนอาร์เรย์ว่าง | Newman TC-011 |
+
+## ความปลอดภัยและข้อจำกัด
+
+- ไม่มีโมเดลสต็อกวัตถุดิบใน `schema.prisma` จึงทดสอบการตัดสต็อกไม่ได้
+- `backend/src/middleware/auth.ts` มี fallback JWT secret ในโค้ด (ข้อสังเกตจากการอ่านโค้ด ยังไม่ได้ทดสอบเชิงโจมตี)
+- ไม่มี connection string, JWT secret, token หรือ registration token ใน Git
