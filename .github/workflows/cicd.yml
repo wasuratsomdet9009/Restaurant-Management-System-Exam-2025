@@ -1,7 +1,7 @@
 name: RMS 68030263 CI and deployment gate
 on:
   push:
-    branches: [main]
+    branches: [main, submission/68030263-20261015]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -99,6 +99,74 @@ jobs:
           test "$AUDIT_BACKEND" = success
           test "$AUDIT_FRONTEND" = success
           test "$NEWMAN" = success
+  onprem:
+    # Runs on the Mac registered as the self-hosted runner (exam 4.1 on-premises evidence).
+    # Push-only: a self-hosted runner on a public repository must never run fork pull requests.
+    if: github.event_name == 'push'
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 20
+    env:
+      ONPREM_API_PORT: "3201"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start disposable PostgreSQL 16 container
+        run: |
+          PGPASS="$(openssl rand -hex 16)"
+          echo "::add-mask::$PGPASS"
+          echo "ONPREM_PGPASS=$PGPASS" >> "$GITHUB_ENV"
+          docker rm -f rms-onprem-ci-db >/dev/null 2>&1 || true
+          docker run -d --name rms-onprem-ci-db -e POSTGRES_DB=rms_onprem -e POSTGRES_USER=rms -e POSTGRES_PASSWORD="$PGPASS" -p 127.0.0.1:55432:5432 postgres:16
+          for i in $(seq 1 30); do
+            if docker exec rms-onprem-ci-db pg_isready -U rms -d rms_onprem; then exit 0; fi
+            sleep 2
+          done
+          exit 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Install, generate, build, push schema and seed backend
+        working-directory: backend
+        run: |
+          export DATABASE_URL="postgresql://rms:${ONPREM_PGPASS}@127.0.0.1:55432/rms_onprem"
+          npm ci && npx prisma generate && npm run build && npx prisma db push && npm run db:seed
+      - name: Start API on the runner and wait for readiness
+        working-directory: backend
+        run: |
+          export DATABASE_URL="postgresql://rms:${ONPREM_PGPASS}@127.0.0.1:55432/rms_onprem"
+          # Fail instead of health-checking some other service that already holds the port.
+          if lsof -nP -iTCP:"$ONPREM_API_PORT" -sTCP:LISTEN >/dev/null 2>&1; then echo "port $ONPREM_API_PORT is already in use"; exit 1; fi
+          export JWT_SECRET="$(openssl rand -hex 32)"
+          export CORS_ORIGIN=http://localhost:5173
+          export NODE_ENV=production
+          export PORT="$ONPREM_API_PORT"
+          nohup node dist/app.js > "$RUNNER_TEMP/onprem-api.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/onprem-api.pid"
+          ready=0
+          for i in $(seq 1 30); do
+            if curl -fsS "http://127.0.0.1:${ONPREM_API_PORT}/api/health" -o "$RUNNER_TEMP/onprem-health.json"; then ready=1; break; fi
+            sleep 2
+          done
+          test "$ready" = 1
+          cat "$RUNNER_TEMP/onprem-health.json"; echo
+      - name: On-premises smoke check (admin login)
+        run: |
+          curl -fsS -X POST "http://127.0.0.1:${ONPREM_API_PORT}/api/auth/login" -H 'Content-Type: application/json' -d '{"username":"admin","password":"Admin@123"}' -o /dev/null -w 'login HTTP %{http_code}\n'
+      - name: Stop API and remove database container
+        if: always()
+        run: |
+          kill "$(cat "$RUNNER_TEMP/onprem-api.pid")" 2>/dev/null || true
+          docker rm -f rms-onprem-ci-db >/dev/null 2>&1 || true
+      - name: Upload on-premises evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rms-68030263-onprem-selfhosted
+          path: |
+            ${{ runner.temp }}/onprem-api.log
+            ${{ runner.temp }}/onprem-health.json
+          if-no-files-found: warn
   deploy:
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
