@@ -93,3 +93,4 @@ router.delete('/:id', authenticate, requireRole('admin'), async (req, res) => {
 })
 
 export default router
+

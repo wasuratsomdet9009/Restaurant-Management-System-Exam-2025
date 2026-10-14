@@ -37,3 +37,4 @@ export const requireRole = (...roles: Array<'admin' | 'cashier' | 'waiter'>) =>
     }
     next()
   }
+

@@ -1,0 +1,980 @@
+{
+  "info": {
+    "name": "RMS-68030263-TestSuite",
+    "description": "นายวสุรัชต์ สมเด็จ 68030263. 25 independently specified cases plus setup/cleanup. Run only against a dedicated disposable test database. Known baseline defects are expected to produce FAIL, not be accepted. Creates test payment records; never run on real production data.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "TC-001 ตรวจสถานะระบบ",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/health",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('status ok',()=>pm.expect(pm.response.json().status).to.eql('ok'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-002 เข้าสู่ระบบ admin",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\":\"admin\",\"password\":\"Admin@123\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('JWT exists',()=>pm.expect(pm.response.json().token).to.be.a('string').and.not.empty);",
+              "pm.environment.set('admin_token', pm.response.json().token);",
+              "pm.environment.set('token', pm.response.json().token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-003 เข้าสู่ระบบ cashier1",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\":\"cashier1\",\"password\":\"Cashier@123\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('JWT exists',()=>pm.expect(pm.response.json().token).to.be.a('string').and.not.empty);",
+              "pm.environment.set('cashier_token', pm.response.json().token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-004 เข้าสู่ระบบ waiter1",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\":\"waiter1\",\"password\":\"Waiter@123\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('JWT exists',()=>pm.expect(pm.response.json().token).to.be.a('string').and.not.empty);",
+              "pm.environment.set('waiter_token', pm.response.json().token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-005 รหัสผ่านผิด",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\":\"admin\",\"password\":\"wrong\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401',()=>pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-006 ไม่ส่งข้อมูลล็อกอิน",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400',()=>pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-007 อ่านเมนูโดยไม่มีโทเคน",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/menu",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401',()=>pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-008 ใช้ JWT ปลอม",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/auth/me",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{invalid_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401',()=>pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-009 อ่านเมนู",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/menu",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('array',()=>pm.expect(pm.response.json()).to.be.an('array'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "SETUP เมนูเฉพาะการทดสอบ",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/menu",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"RMS 68030263 Fixture\",\"price\":80,\"category\":\"food\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code!==201){pm.execution.setNextRequest(null);throw new Error('Fixture failed; suite stopped');}",
+              "pm.environment.set('menu_item_id', pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-010 พนักงานแก้ราคาเมนู",
+      "request": {
+        "method": "PUT",
+        "url": "{{base_url}}/menu/{{menu_item_id}}",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{waiter_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"price\":1}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403',()=>pm.response.to.have.status(403));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "SETUP คืนราคาเมนูทดสอบ",
+      "request": {
+        "method": "PUT",
+        "url": "{{base_url}}/menu/{{menu_item_id}}",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"price\":80}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code!==200){pm.execution.setNextRequest(null);throw new Error('Fixture failed; suite stopped');}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-011 ค้นหาด้วยข้อความ SQL",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/menu?search=%27%20)%20OR%201%3D1%20--",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('literal search does not expose records',()=>pm.expect(pm.response.json()).to.eql([]));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-012 พนักงานเพิ่มเมนู",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/menu",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{waiter_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Waiter denied\",\"price\":50,\"category\":\"food\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403',()=>pm.response.to.have.status(403));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-013 เปิดออเดอร์ไม่ระบุโต๊ะ",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/orders",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{waiter_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400',()=>pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "SETUP เลือกโต๊ะว่าง",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/orders/tables",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code!==200){pm.execution.setNextRequest(null);throw new Error('Fixture failed; suite stopped');}",
+              "const table=pm.response.json().find(x=>x.status==='available');",
+              "if(!table){pm.execution.setNextRequest(null);throw new Error('No free table in dedicated test database');}",
+              "pm.environment.set('table_id', table.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-014 เปิดออเดอร์ใหม่",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/orders",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{waiter_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"tableId\":{{table_id}}}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "pm.environment.set('order_id', pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-015 เปิดออเดอร์ซ้ำโต๊ะ",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/orders",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{waiter_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"tableId\":{{table_id}}}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409',()=>pm.response.to.have.status(409));",
+              "pm.environment.set('duplicate_order_id',pm.response.code===201?pm.response.json().id:'');"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CLEANUP ออเดอร์ซ้ำถ้าเกิดบั๊ก",
+      "request": {
+        "method": "PUT",
+        "url": "{{base_url}}/orders/{{duplicate_order_id}}/cancel",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if(!pm.environment.get('duplicate_order_id')) pm.execution.skipRequest();"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('cleanup duplicate',()=>pm.expect([200,404]).to.include(pm.response.code));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-016 ยืนยันออเดอร์ว่าง",
+      "request": {
+        "method": "PUT",
+        "url": "{{base_url}}/orders/{{order_id}}/confirm",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{waiter_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400',()=>pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-017 เพิ่มสินค้า 2 ชิ้น",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/orders/{{order_id}}/items",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{waiter_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"menuItemId\":{{menu_item_id}},\"quantity\":2}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "pm.test('total 160',()=>pm.expect(Number(pm.response.json().totalAmount)).to.eql(160));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-018 ยืนยันออเดอร์",
+      "request": {
+        "method": "PUT",
+        "url": "{{base_url}}/orders/{{order_id}}/confirm",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{waiter_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('confirmed',()=>pm.expect(pm.response.json().status).to.eql('confirmed'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-019 จ่ายเงินเกินยอด",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/payments",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{cashier_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"orderId\":{{order_id}},\"amountPaid\":200,\"method\":\"cash\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "pm.test('change is 40',()=>pm.expect(Number(pm.response.json().change)).to.eql(40));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-020 จ่ายซ้ำออเดอร์ที่ชำระแล้ว",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/payments",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{cashier_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"orderId\":{{order_id}},\"amountPaid\":200}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400',()=>pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "SETUP ออเดอร์สำหรับจ่ายไม่ครบ",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/orders",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{waiter_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"tableId\":{{table_id}}}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code!==201){pm.execution.setNextRequest(null);throw new Error('Fixture failed; suite stopped');}",
+              "pm.environment.set('underpaid_order_id', pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "SETUP สินค้าในออเดอร์จ่ายไม่ครบ",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/orders/{{underpaid_order_id}}/items",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{waiter_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"menuItemId\":{{menu_item_id}},\"quantity\":2}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code!==201){pm.execution.setNextRequest(null);throw new Error('Fixture failed; suite stopped');}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "SETUP ยืนยันออเดอร์จ่ายไม่ครบ",
+      "request": {
+        "method": "PUT",
+        "url": "{{base_url}}/orders/{{underpaid_order_id}}/confirm",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{waiter_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code!==200){pm.execution.setNextRequest(null);throw new Error('Fixture failed; suite stopped');}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-021 จ่ายเงินไม่ครบยอด",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/payments",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{cashier_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"orderId\":{{underpaid_order_id}},\"amountPaid\":100,\"method\":\"cash\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400',()=>pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-022 ตรวจสถานะหลังจ่ายไม่ครบ",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/orders/{{underpaid_order_id}}",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('remains confirmed',()=>pm.expect(pm.response.json().status).to.eql('confirmed'));",
+              "pm.test('no payment saved',()=>pm.expect(pm.response.json().payment).to.eql(null));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CLEANUP ปิดออเดอร์ที่ยังไม่ชำระ",
+      "request": {
+        "method": "PUT",
+        "url": "{{base_url}}/orders/{{underpaid_order_id}}/cancel",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('cancel or already paid',()=>pm.expect([200,400]).to.include(pm.response.code));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-023 อ่านรายงานยอดขาย",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reports/sales",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{cashier_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('revenue number',()=>pm.expect(pm.response.json().totalRevenue).to.be.a('number'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-024 พนักงานอ่านรายงานยอดขาย",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reports/sales",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{waiter_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403',()=>pm.response.to.have.status(403));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-025 ชำระเงินโดยไม่มีโทเคน",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/payments",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"orderId\":1,\"amountPaid\":100}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401',()=>pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CLEANUP ปิดเมนูทดสอบ",
+      "request": {
+        "method": "DELETE",
+        "url": "{{base_url}}/menu/{{menu_item_id}}",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -74,3 +74,4 @@ router.get('/daily', authenticate, requireRole('admin', 'cashier'), async (_req,
 })
 
 export default router
+

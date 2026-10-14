@@ -32,3 +32,4 @@ router.get('/me', authenticate, (req, res) => {
 })
 
 export default router
+

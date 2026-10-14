@@ -62,3 +62,4 @@ describe('Business Risk: Order Total Integrity', () => {
     expect(calculated).toBe(stored)
   })
 })
+

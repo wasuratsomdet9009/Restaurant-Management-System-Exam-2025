@@ -1,0 +1,627 @@
+{
+  "run": "20261014T181929Z-72752",
+  "case_total": 25,
+  "case_passed": 20,
+  "case_failed": 5,
+  "assertions": {
+    "total": 46,
+    "pending": 0,
+    "failed": 6
+  },
+  "cases": [
+    {
+      "id": "TC-001",
+      "name": "TC-001 ตรวจสถานะระบบ",
+      "http": 200,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "status ok",
+          "passed": true
+        }
+      ],
+      "response": {
+        "status": "ok",
+        "timestamp": "2026-10-14T18:20:28.997Z",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "id": "TC-002",
+      "name": "TC-002 เข้าสู่ระบบ admin",
+      "http": 200,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "JWT exists",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-003",
+      "name": "TC-003 เข้าสู่ระบบ cashier1",
+      "http": 200,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "JWT exists",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-004",
+      "name": "TC-004 เข้าสู่ระบบ waiter1",
+      "http": 200,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "JWT exists",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-005",
+      "name": "TC-005 รหัสผ่านผิด",
+      "http": 401,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 401",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-006",
+      "name": "TC-006 ไม่ส่งข้อมูลล็อกอิน",
+      "http": 400,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 400",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-007",
+      "name": "TC-007 อ่านเมนูโดยไม่มีโทเคน",
+      "http": 401,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 401",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-008",
+      "name": "TC-008 ใช้ JWT ปลอม",
+      "http": 401,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 401",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-009",
+      "name": "TC-009 อ่านเมนู",
+      "http": 200,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "array",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-010",
+      "name": "TC-010 พนักงานแก้ราคาเมนู",
+      "http": 200,
+      "result": "Fail",
+      "assertions": [
+        {
+          "name": "HTTP 403",
+          "passed": false
+        }
+      ],
+      "response": {
+        "id": 14,
+        "name": "RMS 68030263 Fixture",
+        "description": null,
+        "price": "1",
+        "category": "food",
+        "isAvailable": true,
+        "imageUrl": null,
+        "createdAt": "2026-10-14T18:20:29.409Z",
+        "updatedAt": "2026-10-14T18:20:29.424Z"
+      }
+    },
+    {
+      "id": "TC-011",
+      "name": "TC-011 ค้นหาด้วยข้อความ SQL",
+      "http": 200,
+      "result": "Fail",
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "literal search does not expose records",
+          "passed": false
+        }
+      ],
+      "response": [
+        {
+          "id": 1,
+          "name": "Pad Thai",
+          "description": "Classic Thai stir-fried noodles",
+          "price": "80",
+          "category": "food",
+          "isAvailable": true,
+          "imageUrl": null,
+          "createdAt": "2026-10-14T18:10:47.140Z",
+          "updatedAt": "2026-10-14T18:10:47.140Z"
+        },
+        {
+          "id": 2,
+          "name": "Tom Yum Soup",
+          "description": "Spicy Thai soup with shrimp",
+          "price": "120",
+          "category": "food",
+          "isAvailable": true,
+          "imageUrl": null,
+          "createdAt": "2026-10-14T18:10:47.140Z",
+          "updatedAt": "2026-10-14T18:10:47.140Z"
+        },
+        {
+          "id": 3,
+          "name": "Green Curry",
+          "description": "Thai green curry with coconut milk",
+          "price": "110",
+          "category": "food",
+          "isAvailable": true,
+          "imageUrl": null,
+          "createdAt": "2026-10-14T18:10:47.140Z",
+          "updatedAt": "2026-10-14T18:10:47.140Z"
+        },
+        {
+          "id": 4,
+          "name": "Fried Rice",
+          "description": "Thai-style fried rice with egg",
+          "price": "75",
+          "category": "food",
+          "isAvailable": true,
+          "imageUrl": null,
+          "createdAt": "2026-10-14T18:10:47.140Z",
+          "updatedAt": "2026-10-14T18:10:47.140Z"
+        },
+        {
+          "id": 5,
+          "name": "Spring Rolls",
+          "description": "Crispy vegetable spring rolls (6)",
+          "price": "65",
+          "category": "food",
+          "isAvailable": true,
+          "imageUrl": null,
+          "createdAt": "2026-10-14T18:10:47.140Z",
+          "updatedAt": "2026-10-14T18:10:47.140Z"
+        },
+        {
+          "id": 6,
+          "name": "Mango Sticky Rice",
+          "description": "Sweet dessert with fresh mango",
+          "price": "60",
+          "category": "dessert",
+          "isAvailable": true,
+          "imageUrl": null,
+          "createdAt": "2026-10-14T18:10:47.140Z",
+          "updatedAt": "2026-10-14T18:10:47.140Z"
+        },
+        {
+          "id": 7,
+          "name": "Coconut Ice Cream",
+          "description": "Homemade coconut ice cream",
+          "price": "55",
+          "category": "dessert",
+          "isAvailable": true,
+          "imageUrl": null,
+          "createdAt": "2026-10-14T18:10:47.140Z",
+          "updatedAt": "2026-10-14T18:10:47.140Z"
+        },
+        {
+          "id": 8,
+          "name": "Fresh OJ",
+          "description": "100% fresh squeezed orange juice",
+          "price": "45",
+          "category": "drink",
+          "isAvailable": true,
+          "imageUrl": null,
+          "createdAt": "2026-10-14T18:10:47.140Z",
+          "updatedAt": "2026-10-14T18:10:47.140Z"
+        },
+        {
+          "id": 9,
+          "name": "Thai Iced Tea",
+          "description": "Sweetened tea with condensed milk",
+          "price": "40",
+          "category": "drink",
+          "isAvailable": true,
+          "imageUrl": null,
+          "createdAt": "2026-10-14T18:10:47.140Z",
+          "updatedAt": "2026-10-14T18:10:47.140Z"
+        },
+        {
+          "id": 10,
+          "name": "Singha Beer",
+          "description": "Thai lager 330ml",
+          "price": "70",
+          "category": "drink",
+          "isAvailable": true,
+          "imageUrl": null,
+          "createdAt": "2026-10-14T18:10:47.140Z",
+          "updatedAt": "2026-10-14T18:10:47.140Z"
+        },
+        {
+          "id": 11,
+          "name": "RMS 68030263 Fixture",
+          "description": null,
+          "price": "80",
+          "category": "food",
+          "isAvailable": false,
+          "imageUrl": null,
+          "createdAt": "2026-10-14T18:11:03.682Z",
+          "updatedAt": "2026-10-14T18:11:04.035Z"
+        },
+        {
+          "id": 12,
+          "name": "RMS 68030263 Fixture",
+          "description": null,
+          "price": "80",
+          "category": "food",
+          "isAvailable": false,
+          "imageUrl": null,
+          "createdAt": "2026-10-14T18:12:33.210Z",
+          "updatedAt": "2026-10-14T18:12:33.524Z"
+        },
+        {
+          "id": 13,
+          "name": "RMS 68030263 Fixture",
+          "description": null,
+          "price": "80",
+          "category": "food",
+          "isAvailable": false,
+          "imageUrl": null,
+          "createdAt": "2026-10-14T18:16:45.583Z",
+          "updatedAt": "2026-10-14T18:16:45.926Z"
+        },
+        {
+          "id": 14,
+          "name": "RMS 68030263 Fixture",
+          "description": null,
+          "price": "80",
+          "category": "food",
+          "isAvailable": true,
+          "imageUrl": null,
+          "createdAt": "2026-10-14T18:20:29.409Z",
+          "updatedAt": "2026-10-14T18:20:29.442Z"
+        }
+      ]
+    },
+    {
+      "id": "TC-012",
+      "name": "TC-012 พนักงานเพิ่มเมนู",
+      "http": 403,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 403",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-013",
+      "name": "TC-013 เปิดออเดอร์ไม่ระบุโต๊ะ",
+      "http": 400,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 400",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-014",
+      "name": "TC-014 เปิดออเดอร์ใหม่",
+      "http": 201,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-015",
+      "name": "TC-015 เปิดออเดอร์ซ้ำโต๊ะ",
+      "http": 201,
+      "result": "Fail",
+      "assertions": [
+        {
+          "name": "HTTP 409",
+          "passed": false
+        }
+      ],
+      "response": {
+        "id": 11,
+        "tableId": 1,
+        "waiterId": 3,
+        "status": "open",
+        "totalAmount": "0",
+        "note": null,
+        "createdAt": "2026-10-14T18:20:29.523Z",
+        "updatedAt": "2026-10-14T18:20:29.523Z"
+      }
+    },
+    {
+      "id": "TC-016",
+      "name": "TC-016 ยืนยันออเดอร์ว่าง",
+      "http": 400,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 400",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-017",
+      "name": "TC-017 เพิ่มสินค้า 2 ชิ้น",
+      "http": 201,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "total 160",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-018",
+      "name": "TC-018 ยืนยันออเดอร์",
+      "http": 200,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "confirmed",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-019",
+      "name": "TC-019 จ่ายเงินเกินยอด",
+      "http": 201,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "change is 40",
+          "passed": true
+        }
+      ],
+      "response": {
+        "payment": {
+          "id": 7,
+          "orderId": 10,
+          "cashierId": 2,
+          "totalAmount": "160",
+          "amountPaid": "200",
+          "change": "40",
+          "method": "cash",
+          "createdAt": "2026-10-14T18:20:29.609Z",
+          "updatedAt": "2026-10-14T18:20:29.609Z"
+        },
+        "change": 40,
+        "message": "Payment processed successfully"
+      }
+    },
+    {
+      "id": "TC-020",
+      "name": "TC-020 จ่ายซ้ำออเดอร์ที่ชำระแล้ว",
+      "http": 400,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 400",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-021",
+      "name": "TC-021 จ่ายเงินไม่ครบยอด",
+      "http": 201,
+      "result": "Fail",
+      "assertions": [
+        {
+          "name": "HTTP 400",
+          "passed": false
+        }
+      ],
+      "response": {
+        "payment": {
+          "id": 8,
+          "orderId": 12,
+          "cashierId": 2,
+          "totalAmount": "160",
+          "amountPaid": "100",
+          "change": "-60",
+          "method": "cash",
+          "createdAt": "2026-10-14T18:20:29.673Z",
+          "updatedAt": "2026-10-14T18:20:29.673Z"
+        },
+        "change": -60,
+        "message": "Payment processed successfully"
+      }
+    },
+    {
+      "id": "TC-022",
+      "name": "TC-022 ตรวจสถานะหลังจ่ายไม่ครบ",
+      "http": 200,
+      "result": "Fail",
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "remains confirmed",
+          "passed": false
+        },
+        {
+          "name": "no payment saved",
+          "passed": false
+        }
+      ],
+      "response": {
+        "id": 12,
+        "tableId": 1,
+        "waiterId": 3,
+        "status": "paid",
+        "totalAmount": "160",
+        "note": null,
+        "createdAt": "2026-10-14T18:20:29.636Z",
+        "updatedAt": "2026-10-14T18:20:29.673Z",
+        "table": {
+          "id": 1,
+          "tableNumber": 1,
+          "capacity": 4,
+          "status": "available",
+          "createdAt": "2026-10-14T18:10:47.141Z",
+          "updatedAt": "2026-10-14T18:20:29.673Z"
+        },
+        "waiter": {
+          "id": 3,
+          "name": "Waiter One"
+        },
+        "items": [
+          {
+            "id": 8,
+            "orderId": 12,
+            "menuItemId": 14,
+            "quantity": 2,
+            "unitPrice": "80",
+            "subtotal": "160",
+            "menuItem": {
+              "id": 14,
+              "name": "RMS 68030263 Fixture",
+              "description": null,
+              "price": "80",
+              "category": "food",
+              "isAvailable": true,
+              "imageUrl": null,
+              "createdAt": "2026-10-14T18:20:29.409Z",
+              "updatedAt": "2026-10-14T18:20:29.442Z"
+            }
+          }
+        ],
+        "payment": {
+          "id": 8,
+          "orderId": 12,
+          "cashierId": 2,
+          "totalAmount": "160",
+          "amountPaid": "100",
+          "change": "-60",
+          "method": "cash",
+          "createdAt": "2026-10-14T18:20:29.673Z",
+          "updatedAt": "2026-10-14T18:20:29.673Z"
+        }
+      }
+    },
+    {
+      "id": "TC-023",
+      "name": "TC-023 อ่านรายงานยอดขาย",
+      "http": 200,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "revenue number",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-024",
+      "name": "TC-024 พนักงานอ่านรายงานยอดขาย",
+      "http": 403,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 403",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "TC-025",
+      "name": "TC-025 ชำระเงินโดยไม่มีโทเคน",
+      "http": 401,
+      "result": "Pass",
+      "assertions": [
+        {
+          "name": "HTTP 401",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

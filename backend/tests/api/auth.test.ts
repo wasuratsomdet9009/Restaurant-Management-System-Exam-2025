@@ -97,3 +97,4 @@ describe('GET /api/auth/me — invalid token', () => {
     expect(res.status).toBe(401)
   })
 })
+

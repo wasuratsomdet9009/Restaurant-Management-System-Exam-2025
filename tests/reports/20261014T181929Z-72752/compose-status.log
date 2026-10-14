@@ -1,0 +1,4 @@
+NAME                      IMAGE                   COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+rms-68030263-backend-1    rms-68030263-backend    "docker-entrypoint.s…"   backend    28 seconds ago   Up 16 seconds (healthy)   127.0.0.1:3001->3001/tcp
+rms-68030263-db-1         postgres:16             "docker-entrypoint.s…"   db         9 minutes ago    Up 9 minutes (healthy)    5432/tcp
+rms-68030263-frontend-1   rms-68030263-frontend   "/docker-entrypoint.…"   frontend   17 seconds ago   Up 10 seconds (healthy)   127.0.0.1:80->80/tcp

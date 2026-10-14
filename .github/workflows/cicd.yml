@@ -1,0 +1,115 @@
+name: RMS 68030263 CI and deployment gate
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: rms_test
+          POSTGRES_USER: rms
+          POSTGRES_PASSWORD: ci_disposable_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U rms -d rms_test"
+          --health-interval 5s --health-timeout 5s --health-retries 15
+    env:
+      DATABASE_URL: postgresql://rms:ci_disposable_password@localhost:5432/rms_test
+      JWT_SECRET: ci_only_disposable_68030263_secret_key
+      CORS_ORIGIN: http://localhost:5173
+      PORT: "3001"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+      - name: Install and build backend
+        working-directory: backend
+        run: npm ci && npx prisma generate && npm run build
+      - name: Create disposable test schema
+        working-directory: backend
+        run: npx prisma db push && npm run db:seed
+      - name: Unit and API tests
+        id: unit
+        continue-on-error: true
+        working-directory: backend
+        env:
+          NODE_ENV: test
+        run: npm test
+      - name: Audit backend
+        id: audit_backend
+        continue-on-error: true
+        working-directory: backend
+        run: npm audit --audit-level=high
+      - name: Install and build frontend
+        working-directory: frontend
+        env:
+          VITE_API_URL: http://localhost:3001/api
+        run: npm ci && npm run build
+      - name: Audit frontend
+        id: audit_frontend
+        continue-on-error: true
+        working-directory: frontend
+        run: npm audit --audit-level=high
+      - name: Start API and wait for readiness
+        run: |
+          mkdir -p tests/reports
+          (cd backend && NODE_ENV=test node -e "require('./dist/app').default.listen(3001)") > tests/reports/backend.log 2>&1 &
+          ready=0
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:3001/api/health; then ready=1; break; fi
+            sleep 2
+          done
+          test "$ready" = 1
+      - name: Install Newman
+        run: npm install --global newman@6 newman-reporter-htmlextra@1
+      - name: Newman integration suite
+        id: newman
+        continue-on-error: true
+        run: bash scripts/run-suite.sh
+      - name: Upload measured evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rms-68030263-reports
+          path: tests/reports/
+          if-no-files-found: warn
+      - name: Enforce all test and audit gates
+        if: always()
+        env:
+          UNIT: ${{ steps.unit.outcome }}
+          AUDIT_BACKEND: ${{ steps.audit_backend.outcome }}
+          AUDIT_FRONTEND: ${{ steps.audit_frontend.outcome }}
+          NEWMAN: ${{ steps.newman.outcome }}
+        run: |
+          test "$UNIT" = success
+          test "$AUDIT_BACKEND" = success
+          test "$AUDIT_FRONTEND" = success
+          test "$NEWMAN" = success
+  deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Trigger Render and Vercel after green CI
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          test -n "$RENDER_DEPLOY_HOOK" && test -n "$VERCEL_DEPLOY_HOOK"
+          curl --fail --silent --show-error -X POST "$RENDER_DEPLOY_HOOK"
+          curl --fail --silent --show-error -X POST "$VERCEL_DEPLOY_HOOK"

@@ -77,3 +77,4 @@ export interface SalesReport {
   payments: Payment[]
   topItems: { name: string; quantity: number; revenue: number }[]
 }
+

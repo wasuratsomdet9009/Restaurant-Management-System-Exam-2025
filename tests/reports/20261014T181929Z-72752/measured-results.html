@@ -1,0 +1,242 @@
+<!doctype html><html lang="th"><meta charset="utf-8"><title>RMS 68030263 measured test results</title><style>body{font-family:system-ui;margin:40px;max-width:1000px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccc;padding:9px;text-align:left}pre{white-space:pre-wrap;background:#f5f5f5;padding:20px}</style><h1>RMS 68030263 — ผลทดสอบจริง</h1><p>Run 20261014T181929Z-72752 | Newman cases 20/25 (80%) | Assertions 40/46 (86.96%)</p><p>เอกสารนี้สรุปข้อมูลจากรายงาน Newman จริง ไม่ใช่ภาพหน้าจอขณะรันระบบ</p><table><tr><th>กรณีทดสอบ</th><th>HTTP</th><th>ผล</th></tr><tr><td>TC-001 ตรวจสถานะระบบ</td><td>200</td><td>Pass</td></tr><tr><td>TC-002 เข้าสู่ระบบ admin</td><td>200</td><td>Pass</td></tr><tr><td>TC-003 เข้าสู่ระบบ cashier1</td><td>200</td><td>Pass</td></tr><tr><td>TC-004 เข้าสู่ระบบ waiter1</td><td>200</td><td>Pass</td></tr><tr><td>TC-005 รหัสผ่านผิด</td><td>401</td><td>Pass</td></tr><tr><td>TC-006 ไม่ส่งข้อมูลล็อกอิน</td><td>400</td><td>Pass</td></tr><tr><td>TC-007 อ่านเมนูโดยไม่มีโทเคน</td><td>401</td><td>Pass</td></tr><tr><td>TC-008 ใช้ JWT ปลอม</td><td>401</td><td>Pass</td></tr><tr><td>TC-009 อ่านเมนู</td><td>200</td><td>Pass</td></tr><tr><td>TC-010 พนักงานแก้ราคาเมนู</td><td>200</td><td>Fail</td></tr><tr><td>TC-011 ค้นหาด้วยข้อความ SQL</td><td>200</td><td>Fail</td></tr><tr><td>TC-012 พนักงานเพิ่มเมนู</td><td>403</td><td>Pass</td></tr><tr><td>TC-013 เปิดออเดอร์ไม่ระบุโต๊ะ</td><td>400</td><td>Pass</td></tr><tr><td>TC-014 เปิดออเดอร์ใหม่</td><td>201</td><td>Pass</td></tr><tr><td>TC-015 เปิดออเดอร์ซ้ำโต๊ะ</td><td>201</td><td>Fail</td></tr><tr><td>TC-016 ยืนยันออเดอร์ว่าง</td><td>400</td><td>Pass</td></tr><tr><td>TC-017 เพิ่มสินค้า 2 ชิ้น</td><td>201</td><td>Pass</td></tr><tr><td>TC-018 ยืนยันออเดอร์</td><td>200</td><td>Pass</td></tr><tr><td>TC-019 จ่ายเงินเกินยอด</td><td>201</td><td>Pass</td></tr><tr><td>TC-020 จ่ายซ้ำออเดอร์ที่ชำระแล้ว</td><td>400</td><td>Pass</td></tr><tr><td>TC-021 จ่ายเงินไม่ครบยอด</td><td>201</td><td>Fail</td></tr><tr><td>TC-022 ตรวจสถานะหลังจ่ายไม่ครบ</td><td>200</td><td>Fail</td></tr><tr><td>TC-023 อ่านรายงานยอดขาย</td><td>200</td><td>Pass</td></tr><tr><td>TC-024 พนักงานอ่านรายงานยอดขาย</td><td>403</td><td>Pass</td></tr><tr><td>TC-025 ชำระเงินโดยไม่มีโทเคน</td><td>401</td><td>Pass</td></tr></table><h2>ผลตอบกลับกรณีที่ไม่ผ่าน</h2><h3>TC-010 พนักงานแก้ราคาเมนู</h3><pre>{
+  &quot;id&quot;: 14,
+  &quot;name&quot;: &quot;RMS 68030263 Fixture&quot;,
+  &quot;description&quot;: null,
+  &quot;price&quot;: &quot;1&quot;,
+  &quot;category&quot;: &quot;food&quot;,
+  &quot;isAvailable&quot;: true,
+  &quot;imageUrl&quot;: null,
+  &quot;createdAt&quot;: &quot;2026-10-14T18:20:29.409Z&quot;,
+  &quot;updatedAt&quot;: &quot;2026-10-14T18:20:29.424Z&quot;
+}</pre><h3>TC-011 ค้นหาด้วยข้อความ SQL</h3><pre>[
+  {
+    &quot;id&quot;: 1,
+    &quot;name&quot;: &quot;Pad Thai&quot;,
+    &quot;description&quot;: &quot;Classic Thai stir-fried noodles&quot;,
+    &quot;price&quot;: &quot;80&quot;,
+    &quot;category&quot;: &quot;food&quot;,
+    &quot;isAvailable&quot;: true,
+    &quot;imageUrl&quot;: null,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;
+  },
+  {
+    &quot;id&quot;: 2,
+    &quot;name&quot;: &quot;Tom Yum Soup&quot;,
+    &quot;description&quot;: &quot;Spicy Thai soup with shrimp&quot;,
+    &quot;price&quot;: &quot;120&quot;,
+    &quot;category&quot;: &quot;food&quot;,
+    &quot;isAvailable&quot;: true,
+    &quot;imageUrl&quot;: null,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;
+  },
+  {
+    &quot;id&quot;: 3,
+    &quot;name&quot;: &quot;Green Curry&quot;,
+    &quot;description&quot;: &quot;Thai green curry with coconut milk&quot;,
+    &quot;price&quot;: &quot;110&quot;,
+    &quot;category&quot;: &quot;food&quot;,
+    &quot;isAvailable&quot;: true,
+    &quot;imageUrl&quot;: null,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;
+  },
+  {
+    &quot;id&quot;: 4,
+    &quot;name&quot;: &quot;Fried Rice&quot;,
+    &quot;description&quot;: &quot;Thai-style fried rice with egg&quot;,
+    &quot;price&quot;: &quot;75&quot;,
+    &quot;category&quot;: &quot;food&quot;,
+    &quot;isAvailable&quot;: true,
+    &quot;imageUrl&quot;: null,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;
+  },
+  {
+    &quot;id&quot;: 5,
+    &quot;name&quot;: &quot;Spring Rolls&quot;,
+    &quot;description&quot;: &quot;Crispy vegetable spring rolls (6)&quot;,
+    &quot;price&quot;: &quot;65&quot;,
+    &quot;category&quot;: &quot;food&quot;,
+    &quot;isAvailable&quot;: true,
+    &quot;imageUrl&quot;: null,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;
+  },
+  {
+    &quot;id&quot;: 6,
+    &quot;name&quot;: &quot;Mango Sticky Rice&quot;,
+    &quot;description&quot;: &quot;Sweet dessert with fresh mango&quot;,
+    &quot;price&quot;: &quot;60&quot;,
+    &quot;category&quot;: &quot;dessert&quot;,
+    &quot;isAvailable&quot;: true,
+    &quot;imageUrl&quot;: null,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;
+  },
+  {
+    &quot;id&quot;: 7,
+    &quot;name&quot;: &quot;Coconut Ice Cream&quot;,
+    &quot;description&quot;: &quot;Homemade coconut ice cream&quot;,
+    &quot;price&quot;: &quot;55&quot;,
+    &quot;category&quot;: &quot;dessert&quot;,
+    &quot;isAvailable&quot;: true,
+    &quot;imageUrl&quot;: null,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;
+  },
+  {
+    &quot;id&quot;: 8,
+    &quot;name&quot;: &quot;Fresh OJ&quot;,
+    &quot;description&quot;: &quot;100% fresh squeezed orange juice&quot;,
+    &quot;price&quot;: &quot;45&quot;,
+    &quot;category&quot;: &quot;drink&quot;,
+    &quot;isAvailable&quot;: true,
+    &quot;imageUrl&quot;: null,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;
+  },
+  {
+    &quot;id&quot;: 9,
+    &quot;name&quot;: &quot;Thai Iced Tea&quot;,
+    &quot;description&quot;: &quot;Sweetened tea with condensed milk&quot;,
+    &quot;price&quot;: &quot;40&quot;,
+    &quot;category&quot;: &quot;drink&quot;,
+    &quot;isAvailable&quot;: true,
+    &quot;imageUrl&quot;: null,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;
+  },
+  {
+    &quot;id&quot;: 10,
+    &quot;name&quot;: &quot;Singha Beer&quot;,
+    &quot;description&quot;: &quot;Thai lager 330ml&quot;,
+    &quot;price&quot;: &quot;70&quot;,
+    &quot;category&quot;: &quot;drink&quot;,
+    &quot;isAvailable&quot;: true,
+    &quot;imageUrl&quot;: null,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:10:47.140Z&quot;
+  },
+  {
+    &quot;id&quot;: 11,
+    &quot;name&quot;: &quot;RMS 68030263 Fixture&quot;,
+    &quot;description&quot;: null,
+    &quot;price&quot;: &quot;80&quot;,
+    &quot;category&quot;: &quot;food&quot;,
+    &quot;isAvailable&quot;: false,
+    &quot;imageUrl&quot;: null,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:11:03.682Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:11:04.035Z&quot;
+  },
+  {
+    &quot;id&quot;: 12,
+    &quot;name&quot;: &quot;RMS 68030263 Fixture&quot;,
+    &quot;description&quot;: null,
+    &quot;price&quot;: &quot;80&quot;,
+    &quot;category&quot;: &quot;food&quot;,
+    &quot;isAvailable&quot;: false,
+    &quot;imageUrl&quot;: null,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:12:33.210Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:12:33.524Z&quot;
+  },
+  {
+    &quot;id&quot;: 13,
+    &quot;name&quot;: &quot;RMS 68030263 Fixture&quot;,
+    &quot;description&quot;: null,
+    &quot;price&quot;: &quot;80&quot;,
+    &quot;category&quot;: &quot;food&quot;,
+    &quot;isAvailable&quot;: false,
+    &quot;imageUrl&quot;: null,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:16:45.583Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:16:45.926Z&quot;
+  },
+  {
+    &quot;id&quot;: 14,
+    &quot;name&quot;: &quot;RMS 68030263 Fixture&quot;,
+    &quot;description&quot;: null,
+    &quot;price&quot;: &quot;80&quot;,
+    &quot;category&quot;: &quot;food&quot;,
+    &quot;isAvailable&quot;: true,
+    &quot;imageUrl&quot;: null,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:20:29.409Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:20:29.442Z&quot;
+  }
+]</pre><h3>TC-015 เปิดออเดอร์ซ้ำโต๊ะ</h3><pre>{
+  &quot;id&quot;: 11,
+  &quot;tableId&quot;: 1,
+  &quot;waiterId&quot;: 3,
+  &quot;status&quot;: &quot;open&quot;,
+  &quot;totalAmount&quot;: &quot;0&quot;,
+  &quot;note&quot;: null,
+  &quot;createdAt&quot;: &quot;2026-10-14T18:20:29.523Z&quot;,
+  &quot;updatedAt&quot;: &quot;2026-10-14T18:20:29.523Z&quot;
+}</pre><h3>TC-021 จ่ายเงินไม่ครบยอด</h3><pre>{
+  &quot;payment&quot;: {
+    &quot;id&quot;: 8,
+    &quot;orderId&quot;: 12,
+    &quot;cashierId&quot;: 2,
+    &quot;totalAmount&quot;: &quot;160&quot;,
+    &quot;amountPaid&quot;: &quot;100&quot;,
+    &quot;change&quot;: &quot;-60&quot;,
+    &quot;method&quot;: &quot;cash&quot;,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:20:29.673Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:20:29.673Z&quot;
+  },
+  &quot;change&quot;: -60,
+  &quot;message&quot;: &quot;Payment processed successfully&quot;
+}</pre><h3>TC-022 ตรวจสถานะหลังจ่ายไม่ครบ</h3><pre>{
+  &quot;id&quot;: 12,
+  &quot;tableId&quot;: 1,
+  &quot;waiterId&quot;: 3,
+  &quot;status&quot;: &quot;paid&quot;,
+  &quot;totalAmount&quot;: &quot;160&quot;,
+  &quot;note&quot;: null,
+  &quot;createdAt&quot;: &quot;2026-10-14T18:20:29.636Z&quot;,
+  &quot;updatedAt&quot;: &quot;2026-10-14T18:20:29.673Z&quot;,
+  &quot;table&quot;: {
+    &quot;id&quot;: 1,
+    &quot;tableNumber&quot;: 1,
+    &quot;capacity&quot;: 4,
+    &quot;status&quot;: &quot;available&quot;,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:10:47.141Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:20:29.673Z&quot;
+  },
+  &quot;waiter&quot;: {
+    &quot;id&quot;: 3,
+    &quot;name&quot;: &quot;Waiter One&quot;
+  },
+  &quot;items&quot;: [
+    {
+      &quot;id&quot;: 8,
+      &quot;orderId&quot;: 12,
+      &quot;menuItemId&quot;: 14,
+      &quot;quantity&quot;: 2,
+      &quot;unitPrice&quot;: &quot;80&quot;,
+      &quot;subtotal&quot;: &quot;160&quot;,
+      &quot;menuItem&quot;: {
+        &quot;id&quot;: 14,
+        &quot;name&quot;: &quot;RMS 68030263 Fixture&quot;,
+        &quot;description&quot;: null,
+        &quot;price&quot;: &quot;80&quot;,
+        &quot;category&quot;: &quot;food&quot;,
+        &quot;isAvailable&quot;: true,
+        &quot;imageUrl&quot;: null,
+        &quot;createdAt&quot;: &quot;2026-10-14T18:20:29.409Z&quot;,
+        &quot;updatedAt&quot;: &quot;2026-10-14T18:20:29.442Z&quot;
+      }
+    }
+  ],
+  &quot;payment&quot;: {
+    &quot;id&quot;: 8,
+    &quot;orderId&quot;: 12,
+    &quot;cashierId&quot;: 2,
+    &quot;totalAmount&quot;: &quot;160&quot;,
+    &quot;amountPaid&quot;: &quot;100&quot;,
+    &quot;change&quot;: &quot;-60&quot;,
+    &quot;method&quot;: &quot;cash&quot;,
+    &quot;createdAt&quot;: &quot;2026-10-14T18:20:29.673Z&quot;,
+    &quot;updatedAt&quot;: &quot;2026-10-14T18:20:29.673Z&quot;
+  }
+}</pre>

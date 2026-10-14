@@ -175,3 +175,4 @@ router.put('/:id/cancel', authenticate, requireRole('admin', 'cashier'), async (
 })
 
 export default router
+

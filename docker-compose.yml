@@ -1,57 +1,51 @@
-version: '3.9'
-
+name: rms-68030263
 services:
-  # db:
-  #   image: postgres:16-alpine
-  #   container_name: rms-db
-  #   restart: unless-stopped
-  #   environment:
-  #     POSTGRES_DB: rms_db
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: postgres
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: rms-backend
-    restart: unless-stopped
+  db:
+    image: postgres:16
     environment:
-      NODE_ENV: production
-      PORT: 3001
-      DATABASE_URL: ${DATABASE_URL}
-      JWT_SECRET: ${JWT_SECRET:-rms-dev-secret-change-in-prod}
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
-    ports:
-      - "3001:3001"
-    # depends_on:
-    #   db:
-    #     condition: service_healthy
+      POSTGRES_DB: rms_staging
+      POSTGRES_USER: rms
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - rms_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3001/api/health || exit 1"]
-      interval: 15s
+      test: ["CMD-SHELL", "pg_isready -U rms -d rms_staging"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql://rms:${POSTGRES_PASSWORD}@db:5432/rms_staging
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      CORS_ORIGIN: http://localhost
+      NODE_ENV: production
+      PORT: "3001"
+    ports:
+      - "127.0.0.1:3001:3001"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/api/health').then(async r=>{if(!r.ok||(await r.json()).status!=='ok')process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
       timeout: 5s
-      retries: 3
-
+      retries: 12
+      start_period: 40s
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
       args:
         VITE_API_URL: /api
-    container_name: rms-frontend
-    restart: unless-stopped
     ports:
-      - "80:80"
+      - "127.0.0.1:80:80"
     depends_on:
       backend:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+volumes:
+  rms_data:

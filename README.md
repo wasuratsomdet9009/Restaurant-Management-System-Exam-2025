@@ -235,3 +235,4 @@ npm install && npm run dev
 | Admin | admin | Admin@123 |
 | Cashier | cashier1 | Cashier@123 |
 | Waiter | waiter1 | Waiter@123 |
+

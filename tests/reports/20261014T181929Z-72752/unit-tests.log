@@ -1,0 +1,52 @@
+
+> rms-backend@1.0.0 test
+> vitest run --reporter=verbose
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Users/wasuratsomdet/Documents/งาน KMITL/RMS-68030263/backend[39m
+
+ [32m✓[39m tests/unit/payment.test.ts[2m > [22mPayment Calculation Logic[2m > [22mreturns correct positive change when overpaid[32m 1[2mms[22m[39m
+ [32m✓[39m tests/unit/payment.test.ts[2m > [22mPayment Calculation Logic[2m > [22mreturns zero change when exact amount is paid[32m 0[2mms[22m[39m
+ [31m×[39m tests/unit/payment.test.ts[2m > [22mPayment Calculation Logic[2m > [22m[BUG-001] should NOT produce negative change (underpayment rejection)[32m 1[2mms[22m[39m
+[31m   → expected -50 to be greater than or equal to 0[39m
+ [32m✓[39m tests/unit/payment.test.ts[2m > [22mPayment Validation[2m > [22maccepts payment when amountPaid equals totalAmount[32m 0[2mms[22m[39m
+ [32m✓[39m tests/unit/payment.test.ts[2m > [22mPayment Validation[2m > [22maccepts payment when amountPaid exceeds totalAmount[32m 0[2mms[22m[39m
+ [32m✓[39m tests/unit/payment.test.ts[2m > [22mPayment Validation[2m > [22mrejects payment when amountPaid is less than totalAmount[32m 0[2mms[22m[39m
+ [32m✓[39m tests/unit/payment.test.ts[2m > [22mPayment Validation[2m > [22mrejects payment of zero[32m 0[2mms[22m[39m
+ [32m✓[39m tests/unit/payment.test.ts[2m > [22mBusiness Risk: Order Total Integrity[2m > [22morder total equals sum of all item subtotals[32m 0[2mms[22m[39m
+ [32m✓[39m tests/api/auth.test.ts[2m > [22mGET /api/health[2m > [22mreturns 200 with status ok[32m 9[2mms[22m[39m
+ [32m✓[39m tests/api/auth.test.ts[2m > [22mPOST /api/auth/login — input validation[2m > [22mreturns 400 when body is empty[32m 6[2mms[22m[39m
+ [32m✓[39m tests/api/auth.test.ts[2m > [22mPOST /api/auth/login — input validation[2m > [22mreturns 400 when username is missing[32m 1[2mms[22m[39m
+ [32m✓[39m tests/api/auth.test.ts[2m > [22mPOST /api/auth/login — input validation[2m > [22mreturns 400 when password is missing[32m 1[2mms[22m[39m
+ [32m✓[39m tests/api/auth.test.ts[2m > [22mPOST /api/auth/login — input validation[2m > [22mreturns 401 when user does not exist[32m 1[2mms[22m[39m
+ [32m✓[39m tests/api/auth.test.ts[2m > [22mProtected routes — 401 without token[2m > [22mMenu list: GET /api/menu → 401[32m 1[2mms[22m[39m
+ [32m✓[39m tests/api/auth.test.ts[2m > [22mProtected routes — 401 without token[2m > [22mOrder list: GET /api/orders → 401[32m 1[2mms[22m[39m
+ [32m✓[39m tests/api/auth.test.ts[2m > [22mProtected routes — 401 without token[2m > [22mCreate order: POST /api/orders → 401[32m 1[2mms[22m[39m
+ [32m✓[39m tests/api/auth.test.ts[2m > [22mProtected routes — 401 without token[2m > [22mCreate payment: POST /api/payments → 401[32m 2[2mms[22m[39m
+ [32m✓[39m tests/api/auth.test.ts[2m > [22mProtected routes — 401 without token[2m > [22mSales report: GET /api/reports/sales → 401[32m 1[2mms[22m[39m
+ [32m✓[39m tests/api/auth.test.ts[2m > [22mProtected routes — 401 without token[2m > [22mMe endpoint: GET /api/auth/me → 401[32m 0[2mms[22m[39m
+ [32m✓[39m tests/api/auth.test.ts[2m > [22mGET /api/auth/me — invalid token[2m > [22mreturns 401 for malformed JWT[32m 1[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/payment.test.ts[2m > [22mPayment Calculation Logic[2m > [22m[BUG-001] should NOT produce negative change (underpayment rejection)
+[31m[1mAssertionError[22m: expected -50 to be greater than or equal to 0[39m
+[36m [2m❯[22m tests/unit/payment.test.ts:[2m29:20[22m[39m
+    [90m 27|[39m     [90m// Current route stores change = -50 without validation[39m
+    [90m 28|[39m     [90m// Expected: route should return HTTP 400, not store -50[39m
+    [90m 29|[39m     [34mexpect[39m(change)[33m.[39m[34mtoBeGreaterThanOrEqual[39m([34m0[39m) [90m// ❌ FAILS → -50 < 0[39m
+    [90m   |[39m                    [31m^[39m
+    [90m 30|[39m   })
+    [90m 31|[39m })
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m19 passed[39m[22m[90m (20)[39m
+[2m   Start at [22m 01:19:38
+[2m   Duration [22m 216ms[2m (transform 52ms, setup 0ms, import 149ms, tests 28ms, environment 0ms)[22m
+

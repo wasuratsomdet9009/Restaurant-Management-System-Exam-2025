@@ -66,3 +66,4 @@ router.get('/:orderId', authenticate, async (req, res) => {
 })
 
 export default router
+
