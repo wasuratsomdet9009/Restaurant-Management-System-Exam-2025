@@ -121,11 +121,11 @@ jobs:
             sleep 2
           done
           exit 1
+      # No npm cache here: on a self-hosted Mac the post-job cache save uploads the whole ~/.npm directory
+      # (about 1.5 GB in run 38620659566) and hung until the job timeout.
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: npm
-          cache-dependency-path: backend/package-lock.json
       - name: Install, generate, build, push schema and seed backend
         working-directory: backend
         run: |
