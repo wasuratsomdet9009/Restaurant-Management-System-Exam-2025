@@ -1,0 +1,6 @@
+# Browser network log copied from the built-in browser tool (Staging, localhost)
+# BUG-003: waiter1 saved a price change on Spring Rolls (menu id 5)
+[80893.53] PUT http://localhost/api/menu/5 -> 200 OK
+# BUG-004: menu search with payload  ' ) OR 1=1 --  returned HTTP 200 (expected: empty array)
+[80893.125] GET http://localhost/api/menu?search=%27+)+OR+1%3D1+-- -> 200 OK
+[80893.126] GET http://localhost/api/menu?search=%27+)+OR+1%3D1+-- -> 200 OK

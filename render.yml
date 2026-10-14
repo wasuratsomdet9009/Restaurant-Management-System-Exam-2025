@@ -8,9 +8,9 @@ services:
     runtime: node
     plan: free
     rootDir: backend
-    # --include=dev: with NODE_ENV=production npm omits devDependencies by default,
-    # but tsc (build), prisma (db push) and tsx (seed) are devDependencies.
-    buildCommand: npm install --include=dev && npx prisma generate && npm run build
+    # Exact build command from exam 5.2. backend/.npmrc (include=dev) keeps devDependencies
+    # installed even though NODE_ENV=production; tsc, prisma and tsx are devDependencies.
+    buildCommand: npm install && npx prisma generate && npm run build
     startCommand: npx prisma db push && npx tsx prisma/seed.ts && npm start
     healthCheckPath: /api/health
     envVars:

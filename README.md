@@ -77,7 +77,7 @@ curl -f http://127.0.0.1:3001/api/health
 ## Cloud Deployment
 
 - **Neon:** PostgreSQL 16, ใช้ connection string ที่มี `sslmode=require` และตั้งใน Render เท่านั้น
-- **Render:** ใช้ [render.yml](render.yml) เป็น Blueprint แบบ Native Node (Root Directory `backend`) — Build: `npm install --include=dev && npx prisma generate && npm run build`, Start: `npx prisma db push && npx tsx prisma/seed.ts && npm start`, Health: `/api/health`
+- **Render:** ใช้ [render.yml](render.yml) เป็น Blueprint แบบ Native Node (Root Directory `backend`) — Build: `npm install && npx prisma generate && npm run build` (ใช้ `backend/.npmrc` ที่ตั้ง `include=dev` เพื่อให้ tsc/prisma/tsx ถูกติดตั้งแม้ NODE_ENV=production), Start: `npx prisma db push && npx tsx prisma/seed.ts && npm start`, Health: `/api/health`
 - **Vercel:** Root Directory `frontend`, Framework Vite, Output `dist`, ตั้ง `VITE_API_URL=https://<backend-host>/api` ก่อน build; [frontend/vercel.json](frontend/vercel.json) มี SPA rewrite สำหรับ `/login` และการ refresh
 - **CORS_ORIGIN** ของ Render ต้องเป็น origin ของ Vercel เท่านั้น (ไม่มี `/api`)
 

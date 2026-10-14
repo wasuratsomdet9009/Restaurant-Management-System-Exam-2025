@@ -65,6 +65,21 @@ Local: Backend http://localhost:3001/api, Frontend http://localhost:5173
 Staging: Frontend http://localhost, Backend http://localhost:3001/api, PostgreSQL 16 ใน Docker  
 CI: Ubuntu runner, Node.js 22, PostgreSQL 16 service ที่เปิดพอร์ต 5432
 
+**เวอร์ชันสภาพแวดล้อมทดสอบ** (เวอร์ชันที่รันจริง; dependency ยึด package-lock.json)
+
+| ส่วน | เวอร์ชัน | ใช้ที่ไหน |
+|---|---|---|
+| ระบบปฏิบัติการ | macOS 26.7 (Darwin 25.6.0), arm64 | Local, On-Premises, Staging, self-hosted runner |
+| Node.js / npm | 22.17.1 / 11.11.0 | Local, On-Premises; CI ใช้ Node.js 22 |
+| Docker / Docker Compose | 29.6.1 / v5.2.0 | Staging |
+| PostgreSQL | 16.15 | Staging (image postgres:16), On-Premises; CI ใช้ image postgres:16 |
+| Express / Prisma | 4.22.3 / 5.22.0 | Backend (package-lock.json) |
+| TypeScript / Vitest | 5.9.3 / 4.1.11 | Backend, Unit/API |
+| React / Vite / Tailwind CSS / React Router | 18.3.1 / 8.3.4 / 4.3.3 / 7.18.4 | Frontend (package-lock.json) |
+| Newman / newman-reporter-htmlextra | 6.2.2 / 1.23.1 (local); CI ติดตั้ง newman@6 และ htmlextra@1 | Integration (Newman) |
+| เบราว์เซอร์ทดสอบ UI | built-in browser ของ Claude desktop (ไม่ทราบเวอร์ชัน) | UI บน Staging และ On-Premises |
+| CI runner | ubuntu-latest (job test); self-hosted macOS ARM64 (job onprem) | GitHub Actions |
+
 ใช้ฐานข้อมูลทดสอบแยกจากข้อมูลร้านจริง บัญชี seed ได้แก่ admin, cashier1, waiter1 ชุดทดสอบสร้างเมนูชื่อ RMS 68030263 Fixture ราคา 80 บาท เลือกโต๊ะว่างและใช้ ID ที่ API ส่งกลับ ไม่ใช้เลขออเดอร์ที่คาดเดา หลังจบจะปิดเมนูทดสอบและยกเลิกออเดอร์ที่ค้าง แต่ประวัติการชำระเงินทดสอบยังอยู่ จึงห้ามรัน Collection ทั้งชุดกับข้อมูลจริง
 
 ### Entry Criteria
@@ -159,122 +174,147 @@ Pass Rate ระดับกรณี = จำนวนกรณี Pass / จ�
 
 ### Dependency ระดับ High/Critical ก่อนแก้
 
-| ส่วน | Package | ระดับ | หมายเลขอ้างอิงจาก audit | เวอร์ชันหลังแก้ |
+| ส่วน | Package | ระดับ | CVE ID (GHSA จาก audit) | เวอร์ชันหลังแก้ |
 |---|---|---|---|---|
-| backend | form-data | high | GHSA-hmw2-7cc7-3qxx | 4.0.6 |
-| backend | nanoid | high | GHSA-28wg-ghj8-5hjv; GHSA-2v37-7h3g-55p8 | 3.3.20 |
-| backend | postcss | high | GHSA-fxqj-rqcc-2cmp; GHSA-r28c-9q8g-f849 | 8.5.30 |
-| backend | proxy-addr | critical | GHSA-jqcg-44mw-7w3h | 2.0.8 |
-| backend | source-map-js | high | GHSA-68fv-2mgg-jv7q | 1.2.2 |
-| backend | vite | high | GHSA-v6wh-96g9-6wx3; GHSA-fx2h-pf6j-xcff | 8.3.4 |
-| frontend | axios | high | GHSA-3w6x-2g7m-8v23; GHSA-q8qp-cvcw-x6jj; GHSA-hfxv-24rg-xrqf; GHSA-777c-7fjr-54vf; GHSA-p92q-9vqr-4j8v; GHSA-j5f8-grm9-p9fc; GHSA-3g43-6gmg-66jw; GHSA-35jp-ww65-95wh; GHSA-898c-q2cr-xwhg; GHSA-pjwm-pj3p-43mv; GHSA-mmx7-hfxf-jppx; GHSA-pmv8-rq9r-6j72; GHSA-mwf2-3pr3-8698; GHSA-7q8q-rj6j-mhjq; GHSA-jqh4-m9w3-8hp9; GHSA-f4gw-2p7v-4548; GHSA-42h9-826w-cgv3; GHSA-hcpx-6fm6-wx23; GHSA-vh66-26gq-q6x8; GHSA-9fr6-4gfg-395g; GHSA-mghh-pgcx-3jjj; GHSA-x97p-jq2g-jp4f; GHSA-3pq3-5fj3-cg6v; GHSA-542g-h47m-68v8; GHSA-j8rh-479h-cp32; GHSA-4hqw-qxg8-jxx2; GHSA-44g4-m2mj-wpvx | 1.20.0 |
-| frontend | braces | high | GHSA-vfj7-8cjw-p6xm | ถอดออกจาก dependency tree |
-| frontend | browserslist | high | GHSA-c83g-rgw3-j3cx; GHSA-73wf-gq98-2v4g | 4.29.3 |
+| backend | form-data | high | CVE-2026-12143 (GHSA-hmw2-7cc7-3qxx) | 4.0.6 |
+| backend | nanoid | high | CVE-2026-67214 (GHSA-28wg-ghj8-5hjv); CVE-2026-67213 (GHSA-2v37-7h3g-55p8) | 3.3.20 |
+| backend | postcss | high | CVE-2026-69153 (GHSA-fxqj-rqcc-2cmp); CVE-2026-73646 (GHSA-r28c-9q8g-f849) | 8.5.30 |
+| backend | proxy-addr | critical | CVE-2026-90711 (GHSA-jqcg-44mw-7w3h) | 2.0.8 |
+| backend | source-map-js | high | CVE-2026-93749 (GHSA-68fv-2mgg-jv7q) | 1.2.2 |
+| backend | vite | high | CVE-2026-53632 (GHSA-v6wh-96g9-6wx3); CVE-2026-53571 (GHSA-fx2h-pf6j-xcff) | 8.3.4 |
+| frontend | axios | high | CVE-2026-42044 (GHSA-3w6x-2g7m-8v23); CVE-2026-42264 (GHSA-q8qp-cvcw-x6jj); CVE-2026-44496 (GHSA-hfxv-24rg-xrqf); CVE-2026-44488 (GHSA-777c-7fjr-54vf); CVE-2026-44487 (GHSA-p92q-9vqr-4j8v); CVE-2026-44486 (GHSA-j5f8-grm9-p9fc); CVE-2026-44495 (GHSA-3g43-6gmg-66jw); CVE-2026-44494 (GHSA-35jp-ww65-95wh); CVE-2026-44490 (GHSA-898c-q2cr-xwhg); CVE-2026-44492 (GHSA-pjwm-pj3p-43mv); CVE-2026-67316 (GHSA-mmx7-hfxf-jppx); CVE-2026-67312 (GHSA-pmv8-rq9r-6j72); CVE-2026-67318 (GHSA-mwf2-3pr3-8698); CVE-2026-67319 (GHSA-7q8q-rj6j-mhjq); CVE-2026-67317 (GHSA-jqh4-m9w3-8hp9); CVE-2026-67315 (GHSA-f4gw-2p7v-4548); CVE-2026-67313 (GHSA-42h9-826w-cgv3); CVE-2026-67321 (GHSA-hcpx-6fm6-wx23); CVE-2026-101908 (GHSA-vh66-26gq-q6x8); CVE-2026-101902 (GHSA-9fr6-4gfg-395g); CVE-2026-101906 (GHSA-mghh-pgcx-3jjj); CVE-2026-101909 (GHSA-x97p-jq2g-jp4f); CVE-2026-101898 (GHSA-3pq3-5fj3-cg6v); CVE-2026-101901 (GHSA-542g-h47m-68v8); CVE-2026-101904 (GHSA-j8rh-479h-cp32); CVE-2026-101900 (GHSA-4hqw-qxg8-jxx2); CVE-2026-101899 (GHSA-44g4-m2mj-wpvx) | 1.20.0 |
+| frontend | braces | high | CVE-2026-93687 (GHSA-vfj7-8cjw-p6xm) | ถอดออกจาก dependency tree |
+| frontend | browserslist | high | CVE-2026-73089 (GHSA-c83g-rgw3-j3cx); CVE-2026-73088 (GHSA-73wf-gq98-2v4g) | 4.29.3 |
 | frontend | chokidar | high | ผ่าน dependency: braces | ถอดออกจาก dependency tree |
 | frontend | fast-glob | high | ผ่าน dependency: micromatch | ถอดออกจาก dependency tree |
-| frontend | form-data | high | GHSA-hmw2-7cc7-3qxx | 4.0.6 |
+| frontend | form-data | high | CVE-2026-12143 (GHSA-hmw2-7cc7-3qxx) | 4.0.6 |
 | frontend | micromatch | high | ผ่าน dependency: braces | ถอดออกจาก dependency tree |
-| frontend | nanoid | high | GHSA-28wg-ghj8-5hjv; GHSA-2v37-7h3g-55p8; GHSA-xwg4-73v4-xw9w | 3.3.20 |
-| frontend | postcss | high | GHSA-6g55-p6wh-862q; GHSA-fxqj-rqcc-2cmp; GHSA-r28c-9q8g-f849 | 8.5.30 |
-| frontend | source-map-js | high | GHSA-68fv-2mgg-jv7q | 1.2.2 |
+| frontend | nanoid | high | CVE-2026-67214 (GHSA-28wg-ghj8-5hjv); CVE-2026-67213 (GHSA-2v37-7h3g-55p8); CVE-2026-73086 (GHSA-xwg4-73v4-xw9w) | 3.3.20 |
+| frontend | postcss | high | CVE-2026-45623 (GHSA-6g55-p6wh-862q); CVE-2026-69153 (GHSA-fxqj-rqcc-2cmp); CVE-2026-73646 (GHSA-r28c-9q8g-f849) | 8.5.30 |
+| frontend | source-map-js | high | CVE-2026-93749 (GHSA-68fv-2mgg-jv7q) | 1.2.2 |
 | frontend | tailwindcss | high | ผ่าน dependency: chokidar, fast-glob, micromatch | 4.3.3 |
-| frontend | vite | high | GHSA-4w7w-66w2-5vf9; GHSA-v6wh-96g9-6wx3; GHSA-fx2h-pf6j-xcff | 8.3.4 |
+| frontend | vite | high | CVE-2026-39365 (GHSA-4w7w-66w2-5vf9); CVE-2026-53632 (GHSA-v6wh-96g9-6wx3); CVE-2026-53571 (GHSA-fx2h-pf6j-xcff) | 8.3.4 |
 
-ผลauditที่อ่านไม่ได้ให้CVEทุกadvisory จึงระบุGHSAตามข้อมูลจริง ไม่สมมติCVE เวอร์ชันในตารางเป็นเวอร์ชันที่ติดตั้งในlockfileซึ่งauditรอบล่าสุดไม่พบช่องโหว่ ไม่ใช่คำรับรองว่าไม่มีช่องโหว่ในอนาคต
+CVE ID ดึงจาก GitHub Advisory Database ด้วย `gh api /advisories/<GHSA>` ทั้ง 42 รายการ (ไม่ได้เดาหมายเลข) เวอร์ชันในตารางเป็นเวอร์ชันที่ npm audit แนะนำให้แก้ และเวอร์ชันที่ติดตั้งจริงอยู่ใน lockfile ซึ่ง npm audit รอบล่าสุดไม่พบช่องโหว่ ไม่ใช่คำรับรองว่าไม่มีช่องโหว่ในอนาคต
 
 หลักฐาน: `tests/reports/20261014T181929Z-72752/backend-audit-after.log` และ `frontend-audit-after.log` ผลbuildหลังอัปเกรดสำเร็จตามTerminal และDockerยังHealthy; UIหลังอัปเกรดยังต้องตรวจด้วยหน้าเว็บ
 
 ## Bug Reports
 
-> Newman รอบ 20261014T181929Z-72752 ยืนยัน HTTP/ฐานข้อมูลของบั๊กทั้ง 4 รายการแล้ว: BUG-001 จาก TC-021/022, BUG-002 จาก TC-015, BUG-003/004 จาก TC-010/011 รายละเอียดจากการอ่านโค้ดด้านล่างเก็บไว้เป็นที่มา ภาพหน้าจอจาก Staging (localhost) รอบ 15 ตุลาคม 2569 อยู่ใน tests/reports/20261015-ui-evidence/ BUG-004 ยังไม่มีภาพหน้าจอ
+> Newman รอบ 20261014T181929Z-72752 ยืนยัน HTTP และฐานข้อมูลของบั๊กทั้ง 4 รายการ: BUG-001 จาก TC-021/022, BUG-002 จาก TC-015, BUG-003 จาก TC-010, BUG-004 จาก TC-011 ภาพหน้าจอ `tests/reports/bug-00X.png` ถ่ายจาก UI บน Staging (localhost) รอบ 15 ตุลาคม 2569 ไฟล์ต้นทางและ log อยู่ใน `tests/reports/20261015-ui-evidence/`
 
-### BUG-001 รับเงินไม่ครบแต่บันทึกชำระสำเร็จ
+## BUG-001: รับเงินไม่ครบแต่บันทึกชำระสำเร็จ
 
-**Severity:** Critical  
-**Priority:** P1  
-**Feature:** Payment  
-**สถานะ:** ยืนยันจาก Newman บน Docker Staging แล้ว
+**Severity:** Critical
+**Priority:** P1
+**Feature:** Payment
 
-**Steps to Reproduce**
-1. เปิดออเดอร์ใหม่ เพิ่มเมนูราคา 80 จำนวน 2 และยืนยัน ยอด 160 บาท
-2. ล็อกอิน cashier1 แล้ว POST /api/payments ด้วย orderId ที่เพิ่งได้ amountPaid=100 และ method=cash
-3. อ่าน GET /api/orders/:id เพื่อดูสถานะและ payment
+### Steps to Reproduce
+1. ล็อกอิน waiter1 เปิดออเดอร์ที่โต๊ะว่าง เพิ่ม Pad Thai (฿80) จำนวน 2 แล้วกด Confirm Order ยอดรวม ฿160
+2. ล็อกอิน cashier1 เปิดหน้าชำระเงินของออเดอร์นั้น เลือกวิธี Cash
+3. กรอก Amount Paid = 100 แล้วกด Process Payment
+4. ตรวจผลที่หน้าชำระเงินและสถานะออเดอร์ (API: `GET /api/orders/:id`)
 
-**Expected Result:** ตอบ 400 ไม่สร้าง payment สถานะยัง confirmed และไม่คืนโต๊ะเป็น available
+### Expected Result
+ระบบปฏิเสธการชำระเงินที่ยอดไม่ครบ ตอบ HTTP 400 ไม่สร้าง payment สถานะออเดอร์ยังเป็น confirmed และโต๊ะไม่ถูกปล่อยเป็น available
 
-**Actual Result:** TC-021 ตอบHTTP201 บันทึกเงินรับ100จากยอด160 เงินทอน-60; TC-022 แสดงสถานะpaidและมีpayment แทนconfirmed/ไม่มีpayment
+### Actual Result
+ระบบบันทึกการชำระเงิน 100 จากยอด 160 โดยเงินทอนเป็น -60 (TC-021 ตอบ HTTP 201) ออเดอร์เปลี่ยนเป็น paid และมีรายการ payment (TC-022) หน้า UI แสดง "Payment Successful" ยอด 160 รับ 100 เงินทอน -60 พร้อมป้าย "BUG-001 DETECTED" ที่แอปแสดงเอง
 
-**Evidence:** [payments.ts](backend/src/routes/payments.ts), TC-021 และ TC-022; ดูmeasured-results.json; ภาพหน้าจอ Staging: [ฟอร์มรับเงิน 100 แสดงเงินทอน -60](tests/reports/20261015-ui-evidence/bug-001-cashier-underpayment-form-staging.jpg) และ [หลังกดชำระ แสดง Payment Successful และป้าย BUG-001 DETECTED ที่แอปแสดงเอง](tests/reports/20261015-ui-evidence/bug-001-cashier-underpayment-result-staging.jpg) (ออเดอร์ #13 โต๊ะ 1 ยอด 160)
+### Evidence
+![Screenshot](./tests/reports/bug-001.png)
 
-**Business Impact:** ร้านอาจรับเงินไม่ครบแต่ระบบบันทึกรายได้เต็มยอด ทำให้ปิดยอดเงินสดไม่ตรง
+ภาพขั้นตอนก่อนกดชำระ: [bug-001-cashier-underpayment-form-staging.jpg](tests/reports/20261015-ui-evidence/bug-001-cashier-underpayment-form-staging.jpg) ผลรายการทดสอบ: [measured-results.json](tests/reports/20261014T181929Z-72752/measured-results.json) (TC-021, TC-022) โค้ดที่เกี่ยวข้อง: [payments.ts](backend/src/routes/payments.ts)
 
-**ข้อเสนอ:** ตรวจจำนวนเงินว่าเป็นตัวเลขจำกัดช่วงและไม่น้อยกว่ายอดบิลก่อนเขียนข้อมูล แล้วทดสอบขอบเขตเงินทอนและสถานะออเดอร์
+### Business Impact
+ร้านอาจรับเงินไม่ครบแต่ระบบบันทึกรายได้เต็มยอด ทำให้ยอดเงินสดไม่ตรงกับยอดขาย ลูกค้าที่จ่ายไม่ครบอาจถูกปิดบิลโดยไม่มีการเก็บยอดที่ขาด ส่งผลต่อรายได้ของร้านโดยตรง
 
-### BUG-002 เปิดออเดอร์ซ้ำบนโต๊ะเดียว
+### ข้อเสนอแนวทางแก้ไข
+ตรวจว่า amountPaid เป็นตัวเลขและไม่น้อยกว่ายอดบิลก่อนเขียนข้อมูล แล้วทดสอบขอบเขตเงินทอนและสถานะออเดอร์ซ้ำด้วย TC-021/022
 
-**Severity:** High  
-**Priority:** P1  
-**Feature:** Order  
-**สถานะ:** ยืนยันจาก Newman บน Docker Staging แล้ว
+## BUG-002: เปิดออเดอร์ซ้ำบนโต๊ะเดียว
 
-**Steps to Reproduce**
-1. เลือกโต๊ะว่างและ POST /api/orders
-2. POST ซ้ำด้วย tableId เดิมโดยยังไม่ชำระหรือยกเลิกออเดอร์แรก
-3. ตรวจรายการออเดอร์ของโต๊ะ
+**Severity:** High
+**Priority:** P1
+**Feature:** Order
 
-**Expected Result:** ครั้งที่สองตอบ 409 และมีเพียงออเดอร์ active เดียว
+### Steps to Reproduce
+1. ล็อกอิน waiter1 เปิดออเดอร์ใหม่ที่โต๊ะ 1 (ได้ออเดอร์ #14) โดยยังไม่ชำระหรือยกเลิก
+2. ส่ง `POST /api/orders` ด้วย `{"tableId":1}` อีกครั้งขณะที่ออเดอร์แรกยังเป็น open
+3. เปิดหน้า Orders (สถานะ open) ตรวจรายการออเดอร์ของโต๊ะ 1
 
-**Actual Result:** TC-015 ตอบHTTP201 และสร้างออเดอร์ที่สองบนโต๊ะเดิม แทนHTTP409
+### Expected Result
+ครั้งที่สองตอบ HTTP 409 และโต๊ะมีออเดอร์ที่เปิดอยู่เพียง 1 รายการ
 
-**Evidence:** [orders.ts](backend/src/routes/orders.ts), TC-015; ดูmeasured-results.json; ภาพหน้าจอ Staging: [Orders แสดงออเดอร์ #14 และ #15 ของโต๊ะ 1 เปิดพร้อมกัน](tests/reports/20261015-ui-evidence/bug-002-two-open-orders-table1-staging.jpg); log API: [bug-002-duplicate-open-order-api.log](tests/reports/20261015-ui-evidence/bug-002-duplicate-open-order-api.log) (ครั้งที่สองได้ HTTP 201 ไม่ใช่ 409)
+### Actual Result
+`POST /api/orders` ครั้งที่สองตอบ HTTP 201 และสร้างออเดอร์ #15 ทำให้โต๊ะ 1 มีออเดอร์ open 2 รายการพร้อมกัน (#14 และ #15) หน้า Orders แสดงทั้งสองรายการ
 
-**Business Impact:** พนักงานอาจส่งอาหารหรือเรียกเก็บเงินซ้ำ และการปิดบิลหนึ่งอาจแสดงโต๊ะว่างทั้งที่อีกบิลยังค้าง
+### Evidence
+![Screenshot](./tests/reports/bug-002.png)
 
-**ข้อเสนอ:** ตรวจและล็อกสิทธิ์การเปิดโต๊ะภายใน transaction ให้รองรับคำขอพร้อมกัน ไม่ใช้เพียง findFirst นอก transaction
+log การเรียก API: [bug-002-duplicate-open-order-api.log](tests/reports/20261015-ui-evidence/bug-002-duplicate-open-order-api.log) โค้ดที่เกี่ยวข้อง: [orders.ts](backend/src/routes/orders.ts) บรรทัด 70-71 มีการตรวจออเดอร์ซ้ำอยู่ในคอมเมนต์และไม่ได้ทำงาน
 
-### BUG-003 พนักงานแก้ราคาเมนูได้
+### Business Impact
+พนักงานอาจส่งอาหารหรือเรียกเก็บเงินซ้ำ และเมื่อปิดบิลใบใดใบหนึ่ง โต๊ะอาจแสดงว่าว่างทั้งที่อีกบิลยังค้างอยู่ ทำให้ยอดขายและการรับเงินคลาดเคลื่อน
 
-**Severity:** High  
-**Priority:** P1  
-**Feature:** Menu และสิทธิ์ผู้ใช้  
-**สถานะ:** ยืนยันจาก Newman บน Docker Staging แล้ว
+### ข้อเสนอแนวทางแก้ไข
+ตรวจออเดอร์ open ของโต๊ะภายใน transaction เดียวกับการสร้างออเดอร์ เพื่อรองรับคำขอพร้อมกัน ไม่ใช้เพียง findFirst นอก transaction
 
-**Steps to Reproduce**
-1. แอดมินสร้างเมนูทดสอบราคา 80 บาท
-2. ล็อกอิน waiter1
-3. PUT /api/menu/:id ด้วย price=1
+## BUG-003: พนักงานแก้ราคาเมนูได้
 
-**Expected Result:** 403 และราคาเดิมไม่เปลี่ยน
+**Severity:** High
+**Priority:** P1
+**Feature:** Menu และสิทธิ์ผู้ใช้
 
-**Actual Result จากโค้ด:** route PUT ใช้ authenticate แต่ไม่มี requireRole('admin') ก่อน prisma.menuItem.update จึงไม่มีการตรวจบทบาทตรงเส้นทางนี้
+### Steps to Reproduce
+1. ล็อกอิน admin ตรวจว่าเมนู Spring Rolls ราคา ฿65
+2. ล็อกอิน waiter1 เปิดหน้า Menu กด Edit ที่ Spring Rolls
+3. เปลี่ยน Price เป็น 1 แล้วกด Save
 
-**Evidence:** [menu.ts](backend/src/routes/menu.ts), TC-010; ดูmeasured-results.json; ภาพหน้าจอ Staging: [waiter1 เข้าหน้าแก้ไขราคาได้ และแอปตอบ Menu item updated](tests/reports/20261015-ui-evidence/bug-003-waiter-edits-price-staging.jpg) (Spring Rolls เปลี่ยนเป็น ฿1.00 บน Staging แล้ว admin ตั้งกลับเป็น ฿65)
+### Expected Result
+ระบบปฏิเสธการแก้ไข (HTTP 403) ราคาเดิมยังคงเป็น ฿65 และไม่ควรแสดงปุ่ม Edit ให้พนักงาน
 
-**Business Impact:** พนักงานที่ไม่มีสิทธิ์อาจเปลี่ยนราคา ทำให้ยอดขายและเงินรับผิดพลาด
+### Actual Result
+หน้า UI ของ waiter1 แสดงปุ่ม Edit และแก้ราคาได้ เมื่อกด Save ระบบแจ้ง "Menu item updated" และราคาเปลี่ยนเป็น ฿1.00 (Newman TC-010 ได้ HTTP 200 แทน 403 ตรงกับพฤติกรรมนี้) หลังทดสอบ admin ตั้งราคากลับเป็น ฿65 บน Staging แล้ว
 
-**ข้อเสนอ:** เพิ่มการตรวจบทบาทที่ backend และซ่อนปุ่มแก้ไขใน frontend ตามสิทธิ์ โดยยังต้องทดสอบ API โดยตรง
+### Evidence
+![Screenshot](./tests/reports/bug-003.png)
 
-### BUG-004 ค้นหาเมนูด้วย SQL ที่ต่อข้อความจากผู้ใช้
+log เครือข่าย: [bug-003-004-network-log.txt](tests/reports/20261015-ui-evidence/bug-003-004-network-log.txt) (`PUT /api/menu/5 -> 200 OK`) โค้ดที่เกี่ยวข้อง: [menu.ts](backend/src/routes/menu.ts) เส้นทาง PUT ใช้ authenticate แต่ไม่มี requireRole('admin')
 
-**Severity:** High  
-**Priority:** P1  
-**Feature:** Menu search  
-**สถานะ:** ยืนยันจาก Newman บน Docker Staging แล้ว
+### Business Impact
+พนักงานที่ไม่มีสิทธิ์เปลี่ยนราคาได้ ทำให้ลดราคาโดยไม่ได้รับอนุญาต ยอดขายและรายรับผิดพลาด
 
-**Steps to Reproduce**
-1. ล็อกอินในระบบทดสอบ
-2. ส่ง GET /api/menu โดย search เป็น `' ) OR 1=1 --`
-3. ตรวจว่า API ค้นหาข้อความนั้นจริงหรือส่งข้อมูลนอกเงื่อนไข
+### ข้อเสนอแนวทางแก้ไข
+เพิ่ม `requireRole('admin')` ที่ `PUT /api/menu/:id` ใน backend และซ่อนปุ่ม Edit ใน frontend สำหรับบทบาทที่ไม่มีสิทธิ์ แล้วทดสอบ API โดยตรงซ้ำด้วย TC-010
 
-**Expected Result:** ค้นหาเป็นข้อความธรรมดา ได้ array ว่างสำหรับ fixture นี้ และไม่เปิดเผยข้อมูลนอกเงื่อนไข
+## BUG-004: ค้นหาเมนูด้วย SQL ที่ต่อข้อความจากผู้ใช้
 
-**Actual Result:** TC-011 ตอบHTTP200พร้อมรายการเมนู แทนarrayว่างเมื่อค้นหาข้อความpayloadเป็นliteral
+**Severity:** High
+**Priority:** P1
+**Feature:** Menu search
 
-**Evidence:** [menu.ts](backend/src/routes/menu.ts), TC-011; ดูmeasured-results.json; ยังไม่มีภาพหน้าจอ (ยืนยันด้วย Newman อย่างเดียว)
+### Steps to Reproduce
+1. ล็อกอินในระบบ (ทดสอบด้วย admin)
+2. เปิดหน้า Menu พิมพ์ `' ) OR 1=1 --` ในช่องค้นหาแล้วกด Search (API: `GET /api/menu?search=' ) OR 1=1 --`)
+3. ตรวจรายการเมนูที่แสดงกลับมา
 
-**Business Impact:** ผู้ใช้ที่ล็อกอินอาจอ่านรายการที่ระบบไม่ควรแสดง กระทบความน่าเชื่อถือของข้อมูล
+### Expected Result
+ค้นหาเป็นข้อความธรรมดา ไม่มีเมนูชื่อนี้จึงได้รายการว่าง (array ว่าง) และไม่แสดงข้อมูลนอกเงื่อนไข
 
-**ข้อเสนอ:** ใช้ Prisma filter หรือ parameterized query และตรวจซ้ำด้วย payload เดิม
+### Actual Result
+ระบบตอบ HTTP 200 และแสดงเมนูทั้ง 10 รายการ (log: `GET /api/menu?search=%27+)+OR+1%3D1+-- -> 200 OK`) แทนที่จะได้ array ว่าง
+
+### Evidence
+![Screenshot](./tests/reports/bug-004.png)
+
+log เครือข่าย: [bug-003-004-network-log.txt](tests/reports/20261015-ui-evidence/bug-003-004-network-log.txt) โค้ดที่เกี่ยวข้อง: [menu.ts](backend/src/routes/menu.ts) และ Newman TC-011
+
+### Business Impact
+ผู้ใช้ที่ล็อกอินอาจอ่านรายการที่ระบบไม่ควรแสดง กระทบความปลอดภัยและความน่าเชื่อถือของข้อมูลในระบบที่มีข้อมูลการขายจริง
+
+### ข้อเสนอแนวทางแก้ไข
+ใช้ Prisma filter (เช่น `contains`) หรือ parameterized query แทนการต่อข้อความ แล้วตรวจซ้ำด้วย payload เดิม (ควรได้ array ว่าง)
 
 ### ข้อสังเกตเพิ่มเติม
 
@@ -357,7 +397,7 @@ docker-compose.yml เพิ่ม PostgreSQL 16, environment ครบ, backend
 
 ผลจริง: `docker compose ps` แสดง db, backend, frontend เป็น healthy ([docker-compose-ps.log](tests/reports/20261015-ui-evidence/docker-compose-ps.log)) health ตอบ `{"status":"ok"}` ([log](tests/reports/20261015-ui-evidence/staging-health-3001.log)) และทดสอบ UI บน `http://localhost` ครบ 4 ขั้นตอน (ดู Smoke Test Results)
 
-หมายเหตุ: stack ที่รันอยู่ build จากโฟลเดอร์สำเนา `RMS-68030263` ซึ่ง docker-compose.yml, Dockerfile, backend/src, frontend/src, prisma และ lockfile เหมือนกับโฟลเดอร์นี้ (ตรวจด้วย diff แล้ว) ยังไม่ได้ rebuild ในโฟลเดอร์นี้ เพราะต้องหยุด stack เดิมที่ใช้พอร์ต 80/3001 ซึ่งยังไม่ได้รับอนุมัติ และยังไม่มีภาพหน้าจอ `docker compose ps` (มีเฉพาะ log)
+หมายเหตุ: stack ที่รันอยู่ build จากโฟลเดอร์สำเนา `RMS-68030263` ซึ่ง docker-compose.yml, Dockerfile, backend/src, frontend/src, prisma และ lockfile เหมือนกับโฟลเดอร์นี้ (ตรวจด้วย diff แล้ว) ยังไม่ได้ rebuild ในโฟลเดอร์นี้ เพราะต้องหยุด stack เดิมที่ใช้พอร์ต 80/3001 ซึ่งยังไม่ได้รับอนุมัติ และภาพหน้าจอ Terminal ([docker-compose-ps-and-health-staging-terminal.png](tests/reports/20261015-ui-evidence/docker-compose-ps-and-health-staging-terminal.png)) แสดง `docker compose ps` (db, backend, frontend เป็น Up และ healthy) และ `curl -i http://localhost:3001/api/health` ตอบ HTTP 200 พร้อม `{"status":"ok"}`
 
 ### Neon.tech Database Setup
 
@@ -374,7 +414,7 @@ docker-compose.yml เพิ่ม PostgreSQL 16, environment ครบ, backend
 - Start ตามข้อสอบ: npx prisma db push && npx tsx prisma/seed.ts && npm start
 - ตั้ง DATABASE_URL, JWT_SECRET, CORS_ORIGIN และ NODE_ENV=production
 - เก็บ dependencies สำหรับ prisma/tsx ตาม start command ไม่ตั้ง NPM_CONFIG_PRODUCTION=true ซึ่งจะตัด devDependencies ที่จำเป็น
-- Build ใช้ `npm install --include=dev` เพราะ NODE_ENV=production ทำให้ npm ข้าม devDependencies (ตรวจแล้ว `npm config get omit` = dev) ไฟล์ [render.yml](render.yml) ตั้งค่าตามนี้ (native Node, rootDir backend)
+- Build ใช้คำสั่งตามข้อสอบ `npm install && npx prisma generate && npm run build` เพราะ NODE_ENV=production ทำให้ npm ข้าม devDependencies (ตรวจแล้ว `npm config get omit` = dev) จึงเพิ่มไฟล์ [backend/.npmrc](backend/.npmrc) ที่ตั้ง `include=dev` ไว้ ทดสอบใน directory ชั่วคราวแล้ว: ไม่มี .npmrc ไม่มี tsc/tsx ใน node_modules/.bin แต่มีเมื่อใช้ .npmrc ไฟล์ [render.yml](render.yml) ตั้งค่าตามนี้ (native Node, rootDir backend)
 - ตรวจ /api/health และบันทึก URL จริง
 
 **Vercel frontend**
@@ -434,8 +474,8 @@ Workflow อยู่ที่ [.github/workflows/cicd.yml](.github/workflows/ci
 - [x] npm auditก่อน/หลังแก้; ล่าสุด0ทั้งBackend/Frontend
 - [x] Docker Stagingและhealthผ่าน
 - [x] commit/push สาขา submission แล้ว (ล่าสุด 224bc40) ไม่ได้ใช้ publish-submission.sh
-- [x] ภาพหน้าจอบั๊ก 3 รายการจาก Staging (BUG-001, BUG-002, BUG-003)
-- [ ] ภาพ docker compose ps (ตอนนี้มีเฉพาะ log ข้อความ)
+- [x] ภาพหน้าจอบั๊ก 4 รายการจาก Staging (BUG-001 ถึง BUG-004) ตามไฟล์ bug-00X.png
+- [x] ภาพ docker compose ps และ health ที่ระบุ URL (Terminal)
 - [ ] On-Premises ที่ Backend พอร์ต 3001 (รอบนี้รันจริงที่ 3101; Frontend 5173 เข้าสู่ระบบได้)
 - [x] Self-Hosted Runner online บนเครื่อง Mac (ดู runner-status.txt)
 - [ ] เปลี่ยนรหัสฐานข้อมูลที่เคยเปิดเผยในรายงานสาธารณะเดิม และอัปเดตRender (ผู้ใช้ดำเนินการเอง)
