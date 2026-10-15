@@ -35,8 +35,8 @@
 | รายการ | URL / สถานะปัจจุบัน |
 |---|---|
 | GitHub Public ของผม | https://github.com/wasuratsomdet9009/Restaurant-Management-System-Exam-2025 — รีโพสิทอรี่เดิม; งานรอบนี้อยู่ในสาขา submission/68030263-20261015 (push แล้ว ล่าสุด 3ab5163) |
-| Frontend เดิม | https://restaurant-management-system-exam-2-kappa.vercel.app — ตรวจก่อนรอบนี้: /login โดยตรงได้ 404 ไม่ใช่หลักฐานของสาขานี้ |
-| Backend Health เดิม | https://restaurant-management-system-exam.onrender.com/api/health — ตรวจก่อนรอบนี้: แสดง Application loading ไม่ใช่ JSON ไม่ใช่หลักฐานของสาขานี้ |
+| Frontend Production | https://restaurant-management-system-exam-2-omega.vercel.app/login — ตรวจแล้ว HTTP 200 (deploy จาก submission ที่ commit c97d7dc) URL เฉพาะ deployment (`...c6vm3a1xh.vercel.app`) ตอบ 302 ไม่ใช้ส่งงาน |
+| Backend Production | https://restaurant-management-system-exam.onrender.com/api/health — ตรวจแล้ว `{"status":"ok"}` (deploy จาก submission ที่ commit c97d7dc) |
 
 ผมยังไม่นับURLเก่าเป็นหลักฐานการdeployซอร์สรอบนี้ และไม่ใส่connection stringของฐานข้อมูลในรายงาน
 
@@ -448,10 +448,10 @@ docker-compose.yml เพิ่ม PostgreSQL 16, environment ครบ, backend
 
 | Feature | On-Premises (Local) | Staging (Docker) | Production (Cloud) | หลักฐาน |
 |---|---|---|---|---|
-| Health status ok | ผ่าน: 127.0.0.1:3101 ตอบ 200 status=ok | ผ่าน: 127.0.0.1:3001 ตอบ 200 status=ok | Not Run: ยังไม่ deploy | [ภาพ 3101](tests/reports/20261015-onprem-run/onprem-api-health-3101.jpg), [log 3101](tests/reports/20261015-onprem-run/onprem-health-3101.log), [log Staging](tests/reports/20261015-ui-evidence/staging-health-3001.log) |
-| Login admin | ผ่าน: admin เข้า dashboard ที่ localhost:5173 | ผ่าน: admin, cashier1, waiter1 เข้าระบบบน localhost | Not Run | [login Staging](tests/reports/20261015-ui-evidence/staging-login-localhost.jpg), [dashboard 5173](tests/reports/20261015-onprem-run/onprem-frontend-admin-dashboard-5173.jpg) |
-| เปิดโต๊ะ เพิ่มสินค้า Confirm | Not Run (รอบนี้ยังไม่ได้ทำบน on-prem) | ผ่าน: Order #13 โต๊ะ 1 Pad Thai 2 ชิ้น รวม ฿160 สถานะ confirmed | Not Run | [ภาพ Order #13](tests/reports/20261015-ui-evidence/staging-order-13-confirmed-160.jpg) |
-| Payment และเงินทอน | Not Run | ยืนยัน BUG-001: รับ 100 จากยอด 160 แสดง Payment Successful เงินทอน -60 | Not Run | [ภาพฟอร์ม](tests/reports/20261015-ui-evidence/bug-001-cashier-underpayment-form-staging.jpg), [ภาพผล](tests/reports/20261015-ui-evidence/bug-001-cashier-underpayment-result-staging.jpg) |
+| Health status ok | ผ่าน: 127.0.0.1:3101 ตอบ 200 status=ok | ผ่าน: 127.0.0.1:3001 ตอบ 200 status=ok | ผ่าน: https://restaurant-management-system-exam.onrender.com/api/health ตอบ 200 `{"status":"ok"}` | [log Production](tests/reports/20261015-production-smoke/prod-01-health.log), [ภาพ 3101](tests/reports/20261015-onprem-run/onprem-api-health-3101.jpg), [log Staging](tests/reports/20261015-ui-evidence/staging-health-3001.log) |
+| Login admin | ผ่าน: admin เข้า dashboard ที่ localhost:5173 | ผ่าน: admin, cashier1, waiter1 เข้าระบบบน localhost | ผ่าน: admin เข้าระบบที่ restaurant-management-system-exam-2-omega.vercel.app | [ภาพ Production](tests/reports/20261015-production-smoke/prod-02-admin-login-dashboard-vercel.jpg), [login Staging](tests/reports/20261015-ui-evidence/staging-login-localhost.jpg) |
+| เปิดโต๊ะ เพิ่มสินค้า Confirm | Not Run (รอบนี้ยังไม่ได้ทำบน on-prem) | ผ่าน: Order #13 โต๊ะ 1 Pad Thai 2 ชิ้น รวม ฿160 สถานะ confirmed | ผ่าน: Order #3 โต๊ะ 2 Pad Thai 2 ชิ้น รวม ฿160 สถานะ confirmed | [ภาพ Order #3](tests/reports/20261015-production-smoke/prod-03-order-3-confirmed-table2.jpg) |
+| Payment และเงินทอน | Not Run | ยืนยัน BUG-001: รับ 100 จากยอด 160 แสดง Payment Successful เงินทอน -60 | **ยืนยัน BUG-001 บน Production:** รับ 100 จากยอด 160 แสดง Payment Successful เงินทอน -60 (ออเดอร์ #3, ข้อมูล demo) | [ภาพฟอร์ม](tests/reports/20261015-production-smoke/prod-04a-payment-amount-100-change-minus60.jpg), [ภาพผล](tests/reports/20261015-production-smoke/prod-04b-payment-result-bug001.jpg) |
 
 ## CI/CD Pipeline + Newman Pass Rate
 
@@ -478,8 +478,8 @@ Workflow อยู่ที่ [.github/workflows/cicd.yml](.github/workflows/ci
 - [x] ภาพ docker compose ps และ health ที่ระบุ URL (Terminal)
 - [ ] On-Premises ที่ Backend พอร์ต 3001 (รอบนี้รันจริงที่ 3101; Frontend 5173 เข้าสู่ระบบได้)
 - [x] Self-Hosted Runner online บนเครื่อง Mac (ดู runner-status.txt)
-- [ ] เปลี่ยนรหัสฐานข้อมูลที่เคยเปิดเผยในรายงานสาธารณะเดิม และอัปเดตRender (ผู้ใช้ดำเนินการเอง)
-- [ ] ยืนยันdeployซอร์สล่าสุดบนNeon/Render/Vercel และProduction Smoke4รายการ (รอบัญชีผู้ใช้)
+- [x] เปลี่ยนรหัสฐานข้อมูลที่เคยเปิดเผยในรายงานสาธารณะเดิม และอัปเดตRender (ผู้ใช้ยืนยันว่า reset แล้ว)
+- [x] ยืนยันdeployซอร์สล่าสุดบนNeon/Render/Vercel และProduction Smoke4รายการ (Render health ok, Vercel /login 200, smoke 4 ข้อ)
 - [ ] ส่ง3URLผ่านMS Teams (ผู้ใช้ส่งเอง)
 
 ผมยังไม่ส่งงานจนหลักฐานที่เหลือครบ ข้อสอบกำหนดให้รายงานบั๊ก จึงเก็บผลFailตามจริง ไม่ปรับexpectedเพื่อให้CIผ่าน
